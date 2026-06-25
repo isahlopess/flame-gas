@@ -1,7 +1,7 @@
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Flame, MapPin, Menu, X, ArrowRight, Zap, Sparkles, Cylinder } from 'lucide-react';
+import { Flame, MapPin, Menu, X, ArrowRight, Zap, Sparkles, Cylinder, Home, Factory, Wrench } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function Welcome({
@@ -22,6 +22,47 @@ export default function Welcome({
     const cylinderX = useTransform(scrollYProgress, [0, 0.5, 1], ['0vw', '10vw', '-10vw']);
 
     const [particles, setParticles] = useState<{id: number, left: string, top: string, size: number, delay: number, duration: number, sway: number}[]>([]);
+
+    const [activeService, setActiveService] = useState(0);
+
+    const servicesData = [
+        {
+            id: 0,
+            icon: "fa-solid fa-house",
+            title: "Para sua Casa",
+            subtitle: "O fogão sempre aceso",
+            description: "Garantimos o peso certo e a qualidade. Entrega expressa, instalação segura e sem dor de cabeça.",
+            color: "text-flame-500",
+            bgColor: "bg-flame-500",
+            bgGradient: "from-flame-400 to-amber-500 dark:from-flame-600 dark:to-orange-800",
+            cta: "Pedir P13 Agora",
+            image: "/images/residential.png"
+        },
+        {
+            id: 1,
+            icon: "fa-solid fa-industry",
+            title: "Para seu Negócio",
+            subtitle: "O fogo não pode apagar",
+            description: "Fornecemos cilindros P45 com reposição programada. Você foca em vender, e a gente cuida da sua energia.",
+            color: "text-amber-500",
+            bgColor: "bg-amber-500",
+            bgGradient: "from-amber-400 to-yellow-500 dark:from-amber-600 dark:to-yellow-800",
+            cta: "Cotação Comercial",
+            image: "/images/commercial.png"
+        },
+        {
+            id: 2,
+            icon: "fa-solid fa-wrench",
+            title: "Assistência Técnica",
+            subtitle: "Segurança em primeiro lugar",
+            description: "Nossa equipe certificada resolve vazamentos, troca válvulas e faz manutenção preventiva da sua rede.",
+            color: "text-blue-500",
+            bgColor: "bg-blue-500",
+            bgGradient: "from-blue-400 to-indigo-500 dark:from-blue-600 dark:to-indigo-800",
+            cta: "Agendar Visita",
+            image: "/images/tech.png"
+        }
+    ];
 
     useEffect(() => {
         setParticles(
@@ -94,6 +135,7 @@ export default function Welcome({
                         ></div>
                         <div className="absolute inset-0 bg-black/60"></div>
                         <div className="absolute inset-0 bg-gradient-to-b from-navy-950/95 via-navy-950/80 to-navy-950/95 mix-blend-multiply"></div>
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-transparent to-flame-900/60"></div>
                     </div>
                     <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none">
                         {particles.map((p) => (
@@ -122,7 +164,7 @@ export default function Welcome({
                         ))}
                     </div>
                     <motion.div
-                        className="relative z-10 w-full max-w-5xl mx-auto px-6 text-center"
+                        className="relative z-20 w-full max-w-5xl mx-auto px-6 text-center mt-10"
                         style={{ opacity, scale, y }}
                     >
                         <motion.div
@@ -131,7 +173,7 @@ export default function Welcome({
                             transition={{ duration: 0.8, ease: "easeOut" }}
                             className="flex justify-center"
                         >
-                            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-flame-50 text-flame-600 dark:bg-flame-500/10 border border-flame-100 dark:border-flame-500/20 text-sm font-medium mb-8">
+                            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-flame-500/20 border border-flame-500/30 text-white text-sm font-medium mb-8 backdrop-blur-sm">
                                 <span className="relative flex h-2 w-2">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-flame-400 opacity-75"></span>
                                   <span className="relative inline-flex rounded-full h-2 w-2 bg-flame-500"></span>
@@ -170,7 +212,7 @@ export default function Welcome({
                                 <input
                                     type="text"
                                     placeholder="Digite seu endereço ou CEP..."
-                                    className="w-full bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white placeholder:text-slate-400 outline-none text-base"
+                                    className="w-full bg-transparent border-none focus:ring-0 text-white placeholder:text-white/60 outline-none text-base"
                                 />
                             </div>
                             <button className="w-full sm:w-auto bg-flame-500 hover:bg-flame-600 text-white px-8 h-14 rounded-xl sm:rounded-full font-medium transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-flame-500/40">
@@ -230,7 +272,129 @@ export default function Welcome({
                         </div>
                     </motion.div>
                 </section>
-                <div className="h-[20vh] bg-slate-50 dark:bg-navy-950"></div>
+                <section id="servicos" className="py-24 sm:py-32 relative z-10 bg-slate-50 dark:bg-navy-950 overflow-hidden">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center max-w-3xl mx-auto mb-16">
+                            <motion.h2
+                                className="text-4xl sm:text-5xl font-heading font-bold text-slate-900 dark:text-white mb-6 leading-tight"
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                            >
+                                Gás na medida certa. <br/><span className="text-flame-500">Sem enrolação.</span>
+                            </motion.h2>
+                            <motion.p
+                                className="text-lg text-slate-600 dark:text-slate-400"
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.1 }}
+                            >
+                                Arraste para o lado ou clique nos cards para descobrir a solução perfeita para você. Da panela do almoço em família até a chapa quente do seu restaurante.
+                            </motion.p>
+                        </div>
+                        <div className="relative w-full h-[700px] flex items-center justify-center perspective-1000 mt-10">
+                            {servicesData.map((service, index) => {
+                                let relativeIndex = (index - activeService) % servicesData.length;
+                                if (relativeIndex < 0) relativeIndex += servicesData.length;
+                                let offset = relativeIndex;
+                                if (offset === 2) offset = -1;
+
+                                const isActive = offset === 0;
+                                const isVisible = true;
+                                return (
+                                    <motion.div
+                                        key={service.id}
+                                        className={`absolute w-full max-w-[360px] sm:max-w-[420px] h-[550px] sm:h-[650px] cursor-pointer touch-none ${isActive ? 'pointer-events-auto' : 'pointer-events-auto'}`}
+                                        onClick={() => !isActive && setActiveService(activeService + offset)}
+                                        drag="x"
+                                        dragConstraints={{ left: 0, right: 0 }}
+                                        dragElastic={0.2}
+                                        onDragEnd={(e, { offset: dragOffset, velocity }) => {
+                                            const swipe = dragOffset.x;
+                                            if (swipe < -50) {
+                                                setActiveService(activeService + 1);
+                                            } else if (swipe > 50) {
+                                                setActiveService(activeService - 1);
+                                            }
+                                        }}
+                                        initial={false}
+                                        animate={{
+                                            x: `${offset * 75}%`,
+                                            scale: isActive ? 1 : 0.85,
+                                            opacity: isActive ? 1 : 0.4,
+                                            zIndex: isActive ? 10 : 5,
+                                            rotateY: offset === -1 ? 15 : offset === 1 ? -15 : 0
+                                        }}
+                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                    >
+                                        <div className="w-full h-full rounded-[2rem] bg-white dark:bg-navy-900 border-8 border-slate-200 dark:border-navy-800 p-4 shadow-2xl flex flex-col relative transition-all duration-300">
+                                            <div className="flex justify-between items-center px-2 py-3 border-b-2 border-slate-100 dark:border-navy-800 mb-4 shrink-0">
+                                                <h3 className="text-2xl font-heading font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                                    {service.title}
+                                                </h3>
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 dark:bg-navy-950 ${service.color}`}>
+                                                    <i className={`${service.icon} text-[15px]`}></i>
+                                                </div>
+                                            </div>
+                                            <div className={`relative flex-1 rounded-xl overflow-hidden shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)] flex items-center justify-center bg-gradient-to-br ${service.bgGradient} p-4 border border-white/20`}>
+                                                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZmlsdGVyIGlkPSJub2lzZUZpbHRlciI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgibm9pc2VGaWx0ZXIpIi8+PC9zdmc+')] opacity-[0.1] mix-blend-overlay"></div>
+                                                <motion.img
+                                                    src={service.image}
+                                                    alt={service.title}
+                                                    className="w-full h-full object-contain filter drop-shadow-[0_20px_20px_rgba(0,0,0,0.25)] relative z-10"
+                                                    animate={{ scale: isActive ? 1.05 : 1, y: isActive ? [0, -5, 0] : 0 }}
+                                                    transition={{
+                                                        scale: { duration: 0.5 },
+                                                        y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="mt-5 px-2 flex flex-col gap-4 shrink-0">
+                                                <div>
+                                                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{service.subtitle}</p>
+                                                    <p className="text-[15px] sm:text-base text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
+                                                        {service.description}
+                                                    </p>
+                                                </div>
+                                                <button className={`w-full py-3.5 rounded-xl font-bold text-white transition-all shadow-md flex items-center justify-center gap-2 ${service.bgColor} ${isActive ? 'hover:scale-[1.02] opacity-100 cursor-pointer' : 'opacity-0 cursor-default pointer-events-none'}`}>
+                                                    {service.cta}
+                                                    <ArrowRight className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )
+                            })}
+                        </div>
+                        <div className="flex items-center justify-center gap-6 mt-12">
+                            <button
+                                onClick={() => setActiveService(activeService - 1)}
+                                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all border border-slate-300 dark:border-navy-700 hover:bg-white dark:hover:bg-navy-900 text-slate-900 dark:text-white hover:shadow-lg`}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                            </button>
+                            <div className="flex items-center gap-2">
+                                {servicesData.map((_, idx) => {
+                                    const activeMod = ((activeService % servicesData.length) + servicesData.length) % servicesData.length;
+                                    return (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setActiveService(activeService + (idx - activeMod))}
+                                            className={`h-2.5 rounded-full transition-all duration-300 ${activeMod === idx ? 'w-8 bg-flame-500' : 'w-2.5 bg-slate-300 dark:bg-navy-700 hover:bg-slate-400'}`}
+                                        />
+                                    )
+                                })}
+                            </div>
+                            <button
+                                onClick={() => setActiveService(activeService + 1)}
+                                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all border border-slate-300 dark:border-navy-700 hover:bg-white dark:hover:bg-navy-900 text-slate-900 dark:text-white hover:shadow-lg`}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </section>
             </main>
         </div>
     );
