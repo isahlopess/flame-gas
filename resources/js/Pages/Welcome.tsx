@@ -1,8 +1,8 @@
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from 'framer-motion';
 import { Flame, MapPin, Menu, X, ArrowRight, Zap, Sparkles, Cylinder, Home, Factory, Wrench } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function Welcome({
     auth,
@@ -61,6 +61,47 @@ export default function Welcome({
             bgGradient: "from-blue-400 to-indigo-500 dark:from-blue-600 dark:to-indigo-800",
             cta: "Agendar Visita",
             image: "/images/tech.png"
+        }
+    ];
+
+    const stepsRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress: stepsProgress } = useScroll({
+        target: stepsRef,
+        offset: ["start start", "end end"]
+    });
+
+    const [activeStep, setActiveStep] = useState(0);
+
+    useMotionValueEvent(stepsProgress, "change", (latest) => {
+        if (latest < 0.33) setActiveStep(0);
+        else if (latest < 0.66) setActiveStep(1);
+        else setActiveStep(2);
+    });
+
+    const stepsData = [
+        {
+            title: "Pedido Digital Rápido",
+            description: "Esqueça as ligações demoradas. Peça seu gás com apenas 2 cliques pelo nosso app ou site, escolhendo o melhor horário para você.",
+            icon: "fa-solid fa-mobile-screen",
+            image: "/images/step1_order_v2_1782420244865.png",
+            color: "text-flame-500",
+            bg: "bg-flame-500"
+        },
+        {
+            title: "Rastreamento em Tempo Real",
+            description: "Acompanhe o trajeto do nosso veículo até a sua porta. Saiba exatamente a hora que o seu gás vai chegar, sem surpresas.",
+            icon: "fa-solid fa-truck-fast",
+            image: "/images/step2_track_v2_1782420261903.png",
+            color: "text-amber-500",
+            bg: "bg-amber-500"
+        },
+        {
+            title: "Instalação Segura",
+            description: "Nossos técnicos são certificados e realizam a instalação completa, testando vazamentos para garantir a máxima segurança da sua família.",
+            icon: "fa-solid fa-shield-halved",
+            image: "/images/step3_install_v2_1782420280992.png",
+            color: "text-blue-500",
+            bg: "bg-blue-500"
         }
     ];
 
@@ -269,10 +310,15 @@ export default function Welcome({
                                 <div className="text-4xl sm:text-5xl font-heading font-extrabold text-amber-500 mb-2">100%</div>
                                 <div className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Gás com Peso Certo</div>
                             </div>
-                        </div>
+                            </div>
                     </motion.div>
                 </section>
-                <section id="servicos" className="py-24 sm:py-32 relative z-10 bg-slate-50 dark:bg-navy-950 overflow-hidden">
+                <section id="servicos" className="py-24 sm:py-32 relative z-10 bg-slate-100 dark:bg-slate-900 overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full overflow-hidden leading-none z-0">
+                        <svg className="relative block w-full h-[60px] sm:h-[100px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" className="fill-navy-950"></path>
+                        </svg>
+                    </div>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center max-w-3xl mx-auto mb-16">
                             <motion.h2
@@ -337,16 +383,15 @@ export default function Welcome({
                                                     <i className={`${service.icon} text-[15px]`}></i>
                                                 </div>
                                             </div>
-                                            <div className={`relative flex-1 rounded-xl overflow-hidden shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)] flex items-center justify-center bg-gradient-to-br ${service.bgGradient} p-4 border border-white/20`}>
-                                                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZmlsdGVyIGlkPSJub2lzZUZpbHRlciI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgibm9pc2VGaWx0ZXIpIi8+PC9zdmc+')] opacity-[0.1] mix-blend-overlay"></div>
+                                            <div className={`relative flex-1 rounded-xl overflow-hidden shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)] flex items-center justify-center bg-gradient-to-br ${service.bgGradient} border border-white/20`}>
+                                                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZmlsdGVyIGlkPSJub2lzZUZpbHRlciI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgibm9pc2VGaWx0ZXIpIi8+PC9zdmc+')] opacity-[0.1] mix-blend-overlay z-0"></div>
                                                 <motion.img
                                                     src={service.image}
                                                     alt={service.title}
-                                                    className="w-full h-full object-contain filter drop-shadow-[0_20px_20px_rgba(0,0,0,0.25)] relative z-10"
-                                                    animate={{ scale: isActive ? 1.05 : 1, y: isActive ? [0, -5, 0] : 0 }}
+                                                    className="w-full h-full object-cover relative z-10"
+                                                    animate={{ scale: isActive ? 1.05 : 1 }}
                                                     transition={{
-                                                        scale: { duration: 0.5 },
-                                                        y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                                                        scale: { duration: 0.5 }
                                                     }}
                                                 />
                                             </div>
@@ -392,6 +437,67 @@ export default function Welcome({
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                             </button>
+                        </div>
+                    </div>
+                </section>
+                <section ref={stepsRef} id="como-funciona" className="relative bg-slate-900 dark:bg-navy-950 h-[300vh]">
+                    <div className="absolute top-0 left-0 w-full overflow-hidden leading-none z-30">
+                        <svg className="relative block w-full h-[50px] sm:h-[80px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" className="fill-slate-100 dark:fill-slate-900 opacity-25"></path>
+                            <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" className="fill-slate-100 dark:fill-slate-900 opacity-50"></path>
+                            <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" className="fill-slate-100 dark:fill-slate-900"></path>
+                        </svg>
+                    </div>
+                    <div className="sticky top-0 h-screen w-full flex flex-col md:flex-row overflow-hidden">
+                        <div className="w-full md:w-1/2 h-1/2 md:h-full flex items-center justify-center p-8 sm:p-16 lg:p-24 bg-slate-900 dark:bg-navy-950 z-20">
+                            <div className="max-w-xl w-full">
+                                <h2 className="text-3xl sm:text-4xl font-heading font-extrabold text-white mb-12">
+                                    O Caminho do <span className="text-flame-500">Gás</span>
+                                </h2>
+                                <div className="space-y-12 relative">
+                                    <div className="absolute left-6 top-6 bottom-6 w-0.5 bg-slate-800 dark:bg-navy-800 z-0 hidden sm:block"></div>
+                                    {stepsData.map((step, idx) => {
+                                        const isActive = activeStep === idx;
+                                        return (
+                                            <div key={idx} className={`relative z-10 flex gap-6 transition-all duration-500 ${isActive ? 'opacity-100 translate-x-2' : 'opacity-30 translate-x-0'}`}>
+                                                <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors duration-500 ${isActive ? step.bg + ' text-white shadow-[0_0_20px_rgba(249,115,22,0.5)]' : 'bg-slate-800 text-slate-500'}`}>
+                                                    <i className={`${step.icon} text-lg`}></i>
+                                                </div>
+                                                <div>
+                                                    <h3 className={`text-xl font-bold mb-2 transition-colors duration-500 ${isActive ? 'text-white' : 'text-slate-400'}`}>
+                                                        {step.title}
+                                                    </h3>
+                                                    <p className={`text-base leading-relaxed transition-colors duration-500 ${isActive ? 'text-slate-300' : 'text-slate-500'}`}>
+                                                        {step.description}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="w-full md:w-1/2 h-1/2 md:h-full relative bg-slate-950 flex items-center justify-center overflow-hidden border-t md:border-t-0 md:border-l border-slate-800/50">
+                            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZmlsdGVyIGlkPSJub2lzZUZpbHRlciI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgibm9pc2VGaWx0ZXIpIi8+PC9zdmc+')] opacity-[0.15] mix-blend-overlay"></div>
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={activeStep}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 1.05 }}
+                                    transition={{ duration: 0.6, ease: "easeInOut" }}
+                                    className="relative z-10 w-full h-full flex items-center justify-center"
+                                >
+                                    <motion.img
+                                        src={stepsData[activeStep].image}
+                                        alt={stepsData[activeStep].title}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </motion.div>
+                            </AnimatePresence>
+                            <motion.div
+                                className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full blur-[120px] opacity-20 pointer-events-none transition-colors duration-700 ${stepsData[activeStep].bg}`}
+                            />
                         </div>
                     </div>
                 </section>
