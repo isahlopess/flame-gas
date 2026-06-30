@@ -10,12 +10,17 @@ import FloatingWhatsApp from '@/Components/FloatingWhatsApp';
 import AnimatedCounter from '@/Components/AnimatedCounter';
 import RevealText from '@/Components/RevealText';
 import UserDropdown from '@/Components/UserDropdown';
+import { CartProvider, useCart } from '@/Contexts/CartContext';
+import CartButton from '@/Components/Cart/CartButton';
+import CartDrawer from '@/Components/Cart/CartDrawer';
+import CheckoutModal from '@/Components/Cart/CheckoutModal';
 
-export default function Welcome({
+function WelcomeContent({
     auth,
 }: PageProps) {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const { addItem, setCartOpen } = useCart();
 
     const { scrollY, scrollYProgress } = useScroll();
 
@@ -34,7 +39,7 @@ export default function Welcome({
 
     const servicesData = [
         {
-            id: 0,
+            id: 'p13',
             icon: "fa-solid fa-house",
             title: "Para sua Casa",
             subtitle: "O fogão sempre aceso",
@@ -42,11 +47,14 @@ export default function Welcome({
             color: "text-flame-500",
             bgColor: "bg-flame-500",
             bgGradient: "from-flame-400 to-amber-500 dark:from-flame-600 dark:to-orange-800",
-            cta: "Pedir P13 Agora",
-            image: "/images/residential.png"
+            cta: "Adicionar P13 - R$ 115,00",
+            image: "/images/residential.png",
+            price: 115.00,
+            productName: "Botijão de Gás P13 (13kg)",
+            category: "Gás Residencial"
         },
         {
-            id: 1,
+            id: 'p45',
             icon: "fa-solid fa-industry",
             title: "Para seu Negócio",
             subtitle: "O fogo não pode apagar",
@@ -54,20 +62,41 @@ export default function Welcome({
             color: "text-amber-500",
             bgColor: "bg-amber-500",
             bgGradient: "from-amber-400 to-yellow-500 dark:from-amber-600 dark:to-yellow-800",
-            cta: "Cotação Comercial",
-            image: "/images/commercial.png"
+            cta: "Adicionar P45 - R$ 410,00",
+            image: "/images/commercial.png",
+            price: 410.00,
+            productName: "Cilindro de Gás P45 (45kg)",
+            category: "Gás Comercial"
         },
         {
-            id: 2,
-            icon: "fa-solid fa-wrench",
-            title: "Assistência Técnica",
-            subtitle: "Segurança em primeiro lugar",
-            description: "Nossa equipe certificada resolve vazamentos, troca válvulas e faz manutenção preventiva da sua rede.",
+            id: 'agua',
+            icon: "fa-solid fa-glass-water",
+            title: "Água Mineral",
+            subtitle: "Saúde e hidratação",
+            description: "Galões de 20L das melhores fontes da região. Entregamos junto com o seu gás ou separadamente.",
             color: "text-blue-500",
             bgColor: "bg-blue-500",
-            bgGradient: "from-blue-400 to-indigo-500 dark:from-blue-600 dark:to-indigo-800",
-            cta: "Agendar Visita",
-            image: "/images/tech.png"
+            bgGradient: "from-blue-400 to-cyan-400 dark:from-blue-600 dark:to-cyan-700",
+            cta: "Adicionar Galão 20L - R$ 15,00",
+            image: "/images/water_gallon.png",
+            price: 15.00,
+            productName: "Galão de Água Mineral (20L)",
+            category: "Água"
+        },
+        {
+            id: 'acessorios',
+            icon: "fa-solid fa-wrench",
+            title: "Acessórios",
+            subtitle: "Segurança em primeiro lugar",
+            description: "Mangueiras, registros e válvulas certificados pelo Inmetro. Troque a cada 5 anos para sua segurança.",
+            color: "text-emerald-500",
+            bgColor: "bg-emerald-500",
+            bgGradient: "from-emerald-400 to-teal-500 dark:from-emerald-600 dark:to-teal-800",
+            cta: "Adicionar Kit Segurança - R$ 45,00",
+            image: "/images/tech.png",
+            price: 45.00,
+            productName: "Kit Registro + Mangueira Inmetro",
+            category: "Acessórios"
         }
     ];
 
@@ -171,7 +200,9 @@ export default function Welcome({
                 style={{ scaleX: scrollYProgress }}
             />
             <CursorGlow />
-            <FloatingWhatsApp />
+            <FloatingWhatsApp phoneNumber="5567999999999" accountName="FlameGás" avatar="/images/logo-icon.svg" />
+            <CartDrawer />
+            <CheckoutModal />
             <Head title="FlameGás - O seu botijão rápido" />
             <div className="fixed top-0 w-full z-50 px-4 sm:px-6 pt-4 sm:pt-6 transition-all duration-500">
                 <header
@@ -203,6 +234,7 @@ export default function Welcome({
                                     <span className="absolute inset-x-4 bottom-1.5 h-0.5 bg-flame-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full opacity-0 group-hover:opacity-100"></span>
                                 </a>
                             ))}
+                            <div className={`w-px h-6 mx-2 ${isScrolled ? 'bg-slate-200 dark:bg-navy-800' : 'bg-white/20'}`}></div>
                             {auth.user ? (
                                 <UserDropdown user={auth.user} isScrolled={isScrolled} />
                             ) : (
@@ -223,6 +255,8 @@ export default function Welcome({
                                     </MagneticWrapper>
                                 </div>
                             )}
+                            <div className={`w-px h-6 mx-2 ${isScrolled ? 'bg-slate-200 dark:bg-navy-800' : 'bg-white/20'}`}></div>
+                            <CartButton isScrolled={isScrolled} />
                         </nav>
                         <button
                             className={`md:hidden w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
@@ -437,10 +471,10 @@ export default function Welcome({
                                 let relativeIndex = (index - activeService) % servicesData.length;
                                 if (relativeIndex < 0) relativeIndex += servicesData.length;
                                 let offset = relativeIndex;
-                                if (offset === 2) offset = -1;
+                                if (relativeIndex === 3) offset = -1;
+                                else if (relativeIndex === 2) offset = 2;
 
                                 const isActive = offset === 0;
-                                const isVisible = true;
                                 return (
                                     <motion.div
                                         key={service.id}
@@ -459,51 +493,60 @@ export default function Welcome({
                                         }}
                                         initial={false}
                                         animate={{
-                                            x: `${offset * 75}%`,
-                                            scale: isActive ? 1 : 0.85,
-                                            opacity: isActive ? 1 : 0.4,
-                                            zIndex: isActive ? 10 : 5,
+                                            x: `${offset === 2 ? 0 : offset * 75}%`,
+                                            scale: isActive ? 1 : (offset === 2 ? 0.7 : 0.85),
+                                            opacity: isActive ? 1 : (offset === 2 ? 0 : 0.4),
+                                            zIndex: isActive ? 10 : (offset === 2 ? 1 : 5),
                                             rotateY: offset === -1 ? 15 : offset === 1 ? -15 : 0
                                         }}
                                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                     >
-                                        <TiltWrapper>
-                                            <div className="w-full h-full rounded-[2rem] bg-white dark:bg-navy-900 border-8 border-slate-200 dark:border-navy-800 p-4 shadow-2xl flex flex-col relative transition-all duration-300">
-                                                <div className="flex justify-between items-center px-2 py-3 border-b-2 border-slate-100 dark:border-navy-800 mb-4 shrink-0">
-                                                    <h3 className="text-2xl font-heading font-extrabold text-slate-900 dark:text-white tracking-tight">
-                                                        {service.title}
-                                                    </h3>
-                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 dark:bg-navy-950 ${service.color}`}>
-                                                        <i className={`${service.icon} text-[15px]`}></i>
-                                                    </div>
-                                                </div>
-                                                <div className={`relative flex-1 rounded-xl overflow-hidden shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)] flex items-center justify-center bg-gradient-to-br ${service.bgGradient} border border-white/20`}>
-                                                    <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZmlsdGVyIGlkPSJub2lzZUZpbHRlciI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgibm9pc2VGaWx0ZXIpIi8+PC9zdmc+')] opacity-[0.1] mix-blend-overlay z-0"></div>
-                                                    <motion.img
-                                                        src={service.image}
-                                                        alt={service.title}
-                                                        loading="lazy"
-                                                        className="w-full h-full object-cover relative z-10"
-                                                        animate={{ scale: isActive ? 1.05 : 1 }}
-                                                        transition={{
-                                                            scale: { duration: 0.5 }
-                                                        }}
-                                                    />
-                                                </div>
-                                                <div className="mt-5 px-2 flex flex-col gap-4 shrink-0">
-                                                    <div>
-                                                        <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{service.subtitle}</p>
-                                                        <p className="text-[15px] sm:text-base text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
-                                                            {service.description}
-                                                        </p>
-                                                    </div>
-                                                    <button className={`w-full py-3.5 rounded-xl font-bold text-white transition-all shadow-md flex items-center justify-center gap-2 ${service.bgColor} ${isActive ? 'hover:scale-[1.02] opacity-100 cursor-pointer' : 'opacity-0 cursor-default pointer-events-none'}`}>
-                                                        {service.cta}
-                                                        <ArrowRight className="w-5 h-5" />
-                                                    </button>
+                                        <div className="w-full h-full rounded-[2rem] bg-white dark:bg-navy-900 border-8 border-slate-200 dark:border-navy-800 p-4 shadow-2xl flex flex-col relative transition-all duration-300 hover:shadow-flame-500/20">
+                                            <div className="flex justify-between items-center px-2 py-3 border-b-2 border-slate-100 dark:border-navy-800 mb-4 shrink-0">
+                                                <h3 className="text-2xl font-heading font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                                    {service.title}
+                                                </h3>
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 dark:bg-navy-950 ${service.color}`}>
+                                                    <i className={`${service.icon} text-[15px]`}></i>
                                                 </div>
                                             </div>
-                                        </TiltWrapper>
+                                            <div className={`relative flex-1 rounded-xl overflow-hidden shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)] flex items-center justify-center bg-gradient-to-br ${service.bgGradient} border border-white/20`}>
+                                                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZmlsdGVyIGlkPSJub2lzZUZpbHRlciI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgibm9pc2VGaWx0ZXIpIi8+PC9zdmc+')] opacity-[0.1] mix-blend-overlay z-0"></div>
+                                                <motion.img
+                                                    src={service.image}
+                                                    alt={service.title}
+                                                    loading="lazy"
+                                                    className="w-full h-full object-cover relative z-10"
+                                                    animate={{ scale: isActive ? 1.05 : 1 }}
+                                                    transition={{ scale: { duration: 0.5 } }}
+                                                />
+                                            </div>
+                                            <div className="mt-5 px-2 flex flex-col gap-4 shrink-0">
+                                                <div>
+                                                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{service.subtitle}</p>
+                                                    <p className="text-[15px] sm:text-base text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
+                                                        {service.description}
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        if (!isActive) return;
+                                                        addItem({
+                                                            id: service.id,
+                                                            name: service.productName,
+                                                            price: service.price,
+                                                            image: service.image,
+                                                            category: service.category,
+                                                        });
+                                                        setCartOpen(true);
+                                                    }}
+                                                    className={`w-full py-3.5 rounded-xl font-bold text-white transition-all shadow-md flex items-center justify-center gap-2 ${service.bgColor} ${isActive ? 'hover:scale-[1.02] opacity-100 cursor-pointer' : 'opacity-0 cursor-default pointer-events-none'}`}
+                                                >
+                                                    {service.cta}
+                                                    <i className="fa-solid fa-cart-plus text-lg ml-2"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </motion.div>
                                 )
                             })}
@@ -511,7 +554,7 @@ export default function Welcome({
                         <div className="flex items-center justify-center gap-6 mt-12">
                             <button
                                 onClick={() => setActiveService(activeService - 1)}
-                                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all border border-slate-300 dark:border-navy-700 hover:bg-white dark:hover:bg-navy-900 text-slate-900 dark:text-white hover:shadow-lg`}
+                                className="w-14 h-14 rounded-full flex items-center justify-center transition-all border border-slate-300 dark:border-navy-700 hover:bg-white dark:hover:bg-navy-900 text-slate-900 dark:text-white hover:shadow-lg"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                             </button>
@@ -529,7 +572,7 @@ export default function Welcome({
                             </div>
                             <button
                                 onClick={() => setActiveService(activeService + 1)}
-                                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all border border-slate-300 dark:border-navy-700 hover:bg-white dark:hover:bg-navy-900 text-slate-900 dark:text-white hover:shadow-lg`}
+                                className="w-14 h-14 rounded-full flex items-center justify-center transition-all border border-slate-300 dark:border-navy-700 hover:bg-white dark:hover:bg-navy-900 text-slate-900 dark:text-white hover:shadow-lg"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                             </button>
@@ -918,5 +961,13 @@ export default function Welcome({
                 </section>
             </main>
         </div>
+    );
+}
+
+export default function Welcome(props: PageProps) {
+    return (
+        <CartProvider>
+            <WelcomeContent {...props} />
+        </CartProvider>
     );
 }

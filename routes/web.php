@@ -25,6 +25,14 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
     Route::get('/', function () {
         return Inertia::render('Hub/Dashboard');
     })->name('hub.dashboard');
+    
+    Route::get('/queue', function () {
+        return Inertia::render('Hub/Queue');
+    })->name('hub.queue');
+    
+    Route::get('/history', function () {
+        return Inertia::render('Hub/History');
+    })->name('hub.history');
 });
 
 Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')->group(function () {

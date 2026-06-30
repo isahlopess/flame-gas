@@ -1,9 +1,15 @@
 import { motion } from 'framer-motion';
 
-export default function FloatingWhatsApp() {
+interface FloatingWhatsAppProps {
+    phoneNumber?: string;
+    accountName?: string;
+    avatar?: string;
+}
+
+export default function FloatingWhatsApp({ phoneNumber = "5511999999999", accountName, avatar }: FloatingWhatsAppProps) {
     return (
         <motion.a
-            href="https://wa.me/5511999999999"
+            href={`https://wa.me/${phoneNumber}`}
             target="_blank"
             rel="noopener noreferrer"
             className="fixed bottom-6 right-6 z-50 group flex items-center gap-3"
