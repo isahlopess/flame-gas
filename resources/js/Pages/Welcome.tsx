@@ -172,43 +172,72 @@ export default function Welcome({
             <CursorGlow />
             <FloatingWhatsApp />
             <Head title="FlameGás - O seu botijão rápido" />
-            <div className="fixed top-0 w-full z-50 px-4 sm:px-6 pt-6 transition-all duration-500">
+            <div className="fixed top-0 w-full z-50 px-4 sm:px-6 pt-4 sm:pt-6 transition-all duration-500">
                 <header
-                    className={`max-w-6xl mx-auto rounded-full transition-all duration-300 ${
+                    className={`max-w-6xl mx-auto rounded-2xl sm:rounded-full transition-all duration-500 ${
                         isScrolled
-                            ? 'py-3 px-6 bg-white/80 dark:bg-navy-950/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-200/50 dark:border-white/10 text-slate-900 dark:text-white'
-                            : 'py-4 px-6 bg-white/5 dark:bg-navy-950/20 backdrop-blur-sm border border-white/10 text-white shadow-xl'
+                            ? 'py-3 px-4 sm:px-6 bg-white/70 dark:bg-navy-950/70 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-white/40 dark:border-white/10'
+                            : 'py-4 px-4 sm:px-6 bg-transparent border border-transparent'
                     }`}
                 >
                     <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                            <img src="/images/fire.png" alt="FlameGás" className="w-9 h-9 object-contain drop-shadow-md" />
-                            <span className="font-heading font-bold text-xl tracking-tight hidden sm:block">Flame<span className="text-flame-500">Gás</span></span>
+                        <div className="flex items-center gap-2 group cursor-pointer">
+                            <img src="/images/fire.png" alt="FlameGás" className="w-8 h-8 object-contain drop-shadow-md group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 group-hover:drop-shadow-[0_0_15px_rgba(249,115,22,0.5)]" />
+                            <span className={`font-heading uppercase transition-colors duration-300 hidden sm:block text-3xl ${isScrolled ? 'text-slate-900 dark:text-white' : 'text-white drop-shadow-sm'}`}>
+                                <span className="font-medium tracking-tight">FLAME</span><span className="font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-flame-500 to-amber-400">GÁS</span>
+                            </span>
                         </div>
-                        <nav className="hidden md:flex items-center gap-8 font-medium text-sm">
-                            <a href="#servicos" className={`transition-colors ${isScrolled ? 'hover:text-flame-500' : 'text-white/80 hover:text-white'}`}>Serviços</a>
-                            <a href="#como-funciona" className={`transition-colors ${isScrolled ? 'hover:text-flame-500' : 'text-white/80 hover:text-white'}`}>Como Funciona</a>
-                            <a href="#planos" className={`transition-colors ${isScrolled ? 'hover:text-flame-500' : 'text-white/80 hover:text-white'}`}>Planos</a>
-                            <div className={`w-px h-5 ${isScrolled ? 'bg-slate-200 dark:bg-navy-800' : 'bg-white/20'}`}></div>
+                        <nav className="hidden md:flex items-center gap-1 font-medium text-sm">
+                            {['Serviços', 'Como Funciona', 'Planos'].map((item) => (
+                                <a
+                                    key={item}
+                                    href={`#${item.toLowerCase().replace(' ', '-')}`}
+                                    className={`relative group px-4 py-2 rounded-full transition-colors ${
+                                        isScrolled
+                                            ? 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
+                                            : 'text-white/80 hover:text-white hover:bg-white/10'
+                                    }`}
+                                >
+                                    {item}
+                                    <span className="absolute inset-x-4 bottom-1.5 h-0.5 bg-flame-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full opacity-0 group-hover:opacity-100"></span>
+                                </a>
+                            ))}
+                            <div className={`w-px h-6 mx-2 ${isScrolled ? 'bg-slate-200 dark:bg-navy-800' : 'bg-white/20'}`}></div>
                             {auth.user ? (
-                                <Link href={route('dashboard')} className={`transition-colors font-semibold ${isScrolled ? 'hover:text-flame-500' : 'text-white'}`}>
+                                <Link
+                                    href={route('dashboard')}
+                                    className={`px-4 py-2 rounded-full transition-colors font-semibold ${isScrolled ? 'text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/5' : 'text-white hover:bg-white/10'}`}
+                                >
                                     Dashboard
                                 </Link>
                             ) : (
-                                <div className="flex items-center gap-4">
-                                    <Link href={route('login')} className={`transition-colors font-semibold ${isScrolled ? 'hover:text-flame-500' : 'text-white'}`}>
+                                <div className="flex items-center gap-2 pl-2">
+                                    <Link
+                                        href={route('login')}
+                                        className={`px-4 py-2 rounded-full transition-colors font-semibold ${isScrolled ? 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5' : 'text-white/90 hover:text-white hover:bg-white/10'}`}
+                                    >
                                         Entrar
                                     </Link>
                                     <MagneticWrapper>
-                                        <Link href={route('register')} className="block bg-flame-500 text-white px-6 py-2.5 rounded-full hover:bg-flame-600 transition-all shadow-lg shadow-flame-500/25 border border-flame-400/50 font-semibold">
+                                        <Link
+                                            href={route('register')}
+                                            className="block bg-flame-500 text-white px-6 py-2.5 rounded-full hover:bg-flame-600 transition-all shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] hover:shadow-[0_6px_20px_rgba(249,115,22,0.23)] border border-flame-400/50 hover:border-flame-400 font-bold tracking-wide text-sm"
+                                        >
                                             Criar Conta
                                         </Link>
                                     </MagneticWrapper>
                                 </div>
                             )}
                         </nav>
-                        <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                            {mobileMenuOpen ? <X /> : <Menu />}
+                        <button
+                            className={`md:hidden w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+                                isScrolled
+                                    ? 'bg-slate-100 dark:bg-navy-900 text-slate-900 dark:text-white'
+                                    : 'bg-white/10 text-white backdrop-blur-md'
+                            }`}
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        >
+                            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                         </button>
                     </div>
                 </header>
