@@ -105,7 +105,6 @@ export default function Welcome({
         }
     ];
 
-    // FAQ & Testimonials Data
     const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
     const testimonials = [
@@ -486,7 +485,7 @@ export default function Welcome({
                                         return (
                                             <div key={idx} className={`relative z-10 flex gap-6 transition-all duration-500 ${isActive ? 'opacity-100 translate-x-2' : 'opacity-30 translate-x-0'}`}>
                                                 <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors duration-500 ${isActive ? step.bg + ' text-white shadow-[0_0_20px_rgba(249,115,22,0.5)]' : 'bg-slate-800 text-slate-500'}`}>
-                                                    <i className={`${step.icon} text-lg`}></i>
+                                                   <i className={`${step.icon} text-lg`}></i>
                                                 </div>
                                                 <div>
                                                     <h3 className={`text-xl font-bold mb-2 transition-colors duration-500 ${isActive ? 'text-white' : 'text-slate-400'}`}>
@@ -708,77 +707,132 @@ export default function Welcome({
                         </div>
                     </div>
                 </section>
-                <section id="download" className="relative pt-24 bg-navy-950 overflow-hidden">
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-flame-900/40 via-navy-950 to-navy-950 pointer-events-none"></div>
-                    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mb-24">
-                        <div className="glass bg-white/5 border border-white/10 rounded-[3rem] p-8 sm:p-16 text-center backdrop-blur-md shadow-2xl relative overflow-hidden">
-                            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-flame-500/20 rounded-full blur-[80px] pointer-events-none"></div>
-                            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-64 h-64 bg-amber-500/20 rounded-full blur-[80px] pointer-events-none"></div>
-                            <h2 className="text-4xl sm:text-5xl font-heading font-extrabold text-white mb-6">
-                                Pronto para a chama <span className="text-flame-500">perfeita?</span>
-                            </h2>
-                            <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-10">
-                                Baixe nosso aplicativo agora mesmo e ganhe 10% de desconto no seu primeiro pedido. Simples, rápido e seguro.
-                            </p>
-                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                <button className="w-full sm:w-auto bg-flame-500 hover:bg-flame-600 text-white px-8 py-4 rounded-full font-bold transition-all flex items-center justify-center gap-3 hover:scale-105 hover:shadow-[0_0_30px_rgba(249,115,22,0.4)]">
-                                    <i className="fa-brands fa-apple text-xl"></i>
-                                    <span>App Store</span>
-                                </button>
-                                <button className="w-full sm:w-auto bg-white/10 hover:bg-white/20 border border-white/20 text-white px-8 py-4 rounded-full font-bold transition-all flex items-center justify-center gap-3 hover:scale-105">
-                                    <i className="fa-brands fa-google-play text-xl"></i>
-                                    <span>Google Play</span>
-                                </button>
+                <section id="cta" className="relative pt-32 bg-[#020617] overflow-hidden">
+                    <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgc3Ryb2tlPSIjMWUyOTNiIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0iTTAgNjBoNjBNNjAgMEw2MCA2MCIvPjwvZz48L3N2Zz4=')] opacity-20"></div>
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#020617] via-transparent to-[#020617]"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#020617] via-transparent to-[#020617]"></div>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mb-32">
+                        <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+                            <div className="w-full lg:w-1/2">
+                                <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 font-bold text-xs uppercase tracking-widest mb-8">
+                                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                    Emergência Culinária
+                                </div>
+                                <h2 className="text-6xl sm:text-7xl lg:text-8xl font-heading font-black text-white mb-8 leading-[0.9] tracking-tighter">
+                                    GÁS <br/>
+                                    <span className="text-slate-600">ACABOU?</span>
+                                </h2>
+                                <p className="text-xl sm:text-2xl text-slate-400 max-w-lg leading-relaxed font-light mb-10">
+                                    Não perca sua receita. Nossa rede inteligente conecta você ao entregador mais rápido da região em poucos cliques.
+                                </p>
+                                <div className="flex items-center gap-4 text-slate-500 text-sm font-medium">
+                                    <div className="flex items-center gap-2">
+                                        <i className="fa-solid fa-bolt text-amber-500"></i> Rapidez
+                                    </div>
+                                    <div className="w-1 h-1 bg-slate-700 rounded-full"></div>
+                                    <div className="flex items-center gap-2">
+                                        <i className="fa-solid fa-shield-halved text-blue-500"></i> Segurança
+                                    </div>
+                                    <div className="w-1 h-1 bg-slate-700 rounded-full"></div>
+                                    <div className="flex items-center gap-2">
+                                        <i className="fa-solid fa-star text-flame-500"></i> 4.9/5 Avaliações
+                                    </div>
+                                </div>
                             </div>
-                            <div className="mt-8 text-sm text-slate-400">
-                                Ou prefere falar com um humano? <a href="#" className="text-flame-500 font-bold hover:underline">Peça pelo WhatsApp</a>
+                            <div className="w-full lg:w-1/2 relative">
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-[#25D366] rounded-full blur-[120px] opacity-20 pointer-events-none"></div>
+                                <div className="relative w-full max-w-md mx-auto bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-[2.5rem] p-8 shadow-2xl shadow-black/50">
+                                    <div className="w-full h-48 bg-slate-950 rounded-2xl border border-slate-800 mb-8 relative overflow-hidden flex items-center justify-center">
+                                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 to-transparent"></div>
+                                        <motion.div animate={{ scale: [1, 2.5], opacity: [0.5, 0] }} transition={{ duration: 2.5, repeat: Infinity }} className="absolute w-16 h-16 border border-emerald-500/40 rounded-full"></motion.div>
+                                        <motion.div animate={{ scale: [1, 2.5], opacity: [0.5, 0] }} transition={{ duration: 2.5, repeat: Infinity, delay: 0.8 }} className="absolute w-16 h-16 border border-emerald-500/40 rounded-full"></motion.div>
+                                        <div className="relative w-4 h-4 bg-emerald-500 rounded-full shadow-[0_0_15px_#10b981] z-10 flex items-center justify-center">
+                                            <div className="w-8 h-8 bg-emerald-500/20 rounded-full absolute animate-ping"></div>
+                                        </div>
+                                        <motion.div animate={{ x: [-60, -20], y: [50, 15] }} transition={{ duration: 4, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }} className="absolute z-10">
+                                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg border border-slate-200">
+                                                <i className="fa-solid fa-truck text-emerald-600 text-xs"></i>
+                                            </div>
+                                        </motion.div>
+                                    </div>
+                                    <div className="flex justify-between items-end mb-8">
+                                        <div>
+                                            <p className="text-slate-400 text-sm font-medium mb-1">Motorista a caminho</p>
+                                            <p className="text-4xl font-black text-white tracking-tight">15 <span className="text-xl text-slate-500 font-medium">min</span></p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-slate-400 text-sm font-medium mb-1">Pagamento</p>
+                                            <p className="text-white font-bold flex items-center gap-2 justify-end"><i className="fa-brands fa-pix text-emerald-400"></i> PIX / Cartão</p>
+                                        </div>
+                                    </div>
+                                    <button className="w-full relative group overflow-hidden bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-2xl p-5 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] shadow-[0_10px_30px_rgba(37,211,102,0.3)]">
+                                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                                        <i className="fa-brands fa-whatsapp text-2xl relative z-10"></i>
+                                        <span className="font-bold text-lg tracking-wide relative z-10">Chamar no WhatsApp</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <footer className="border-t border-white/5 pb-12 pt-12 relative z-10 text-center sm:text-left">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-                            <div className="col-span-1 md:col-span-2">
-                                <div className="flex items-center justify-center sm:justify-start gap-2 mb-4">
-                                    <img src="/images/fire.png" alt="Logo FlameGás" className="w-8 h-8" />
-                                    <span className="text-2xl font-heading font-extrabold text-white tracking-tight">
+                    <footer className="relative border-t border-white/10 pt-16 pb-8 bg-black/50 backdrop-blur-lg">
+                        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-flame-500 to-transparent opacity-70"></div>
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-12 mb-16 relative z-10">
+                            <div className="col-span-1 md:col-span-5 lg:col-span-5">
+                                <div className="flex items-center gap-2 mb-6">
+                                    <img src="/images/fire.png" alt="Logo FlameGás" className="w-10 h-10 drop-shadow-[0_0_15px_rgba(249,115,22,0.5)]" />
+                                    <span className="text-3xl font-heading font-extrabold text-white tracking-tight">
                                         Flame<span className="text-flame-500">Gás</span>
                                     </span>
                                 </div>
-                                <p className="text-slate-400 text-sm max-w-md mx-auto sm:mx-0">
-                                    Revolucionando a entrega de gás de cozinha. Mais velocidade, segurança e transparência para a sua família ou negócio.
+                                <p className="text-slate-400 text-base max-w-md leading-relaxed">
+                                    Revolucionando a entrega de gás de cozinha. Mais velocidade, segurança e transparência para a sua família ou negócio. A chama que não te deixa na mão.
                                 </p>
                             </div>
-                            <div>
-                                <h4 className="text-white font-bold mb-4">Links Rápidos</h4>
-                                <ul className="space-y-2 text-slate-400 text-sm">
-                                    <li><a href="#servicos" className="hover:text-flame-500 transition-colors">Serviços</a></li>
-                                    <li><a href="#como-funciona" className="hover:text-flame-500 transition-colors">Como Funciona</a></li>
-                                    <li><a href="#faq" className="hover:text-flame-500 transition-colors">Dúvidas Frequentes</a></li>
-                                    <li><a href="#" className="hover:text-flame-500 transition-colors">Seja um Entregador</a></li>
+                            <div className="col-span-1 md:col-span-3 lg:col-span-3">
+                                <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Links Rápidos</h4>
+                                <ul className="space-y-4 text-slate-400">
+                                    <li><a href="#servicos" className="hover:text-flame-400 transition-colors flex items-center gap-2 group"><i className="fa-solid fa-chevron-right text-xs text-flame-500/50 group-hover:text-flame-500 transition-colors"></i> Serviços</a></li>
+                                    <li><a href="#como-funciona" className="hover:text-flame-400 transition-colors flex items-center gap-2 group"><i className="fa-solid fa-chevron-right text-xs text-flame-500/50 group-hover:text-flame-500 transition-colors"></i> Como Funciona</a></li>
+                                    <li><a href="#faq" className="hover:text-flame-400 transition-colors flex items-center gap-2 group"><i className="fa-solid fa-chevron-right text-xs text-flame-500/50 group-hover:text-flame-500 transition-colors"></i> Dúvidas</a></li>
                                 </ul>
                             </div>
-                            <div>
-                                <h4 className="text-white font-bold mb-4">Fale Conosco</h4>
-                                <ul className="space-y-2 text-slate-400 text-sm">
-                                    <li><i className="fa-brands fa-whatsapp mr-2 text-flame-500"></i> (11) 99999-9999</li>
-                                    <li><i className="fa-solid fa-phone mr-2 text-flame-500"></i> 0800 123 4567</li>
-                                    <li><i className="fa-solid fa-envelope mr-2 text-flame-500"></i> contato@flamegas.com.br</li>
+                            <div className="col-span-1 md:col-span-4 lg:col-span-4">
+                                <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Central de Atendimento</h4>
+                                <ul className="space-y-4 text-slate-400">
+                                    <li className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-flame-500 shrink-0">
+                                            <i className="fa-brands fa-whatsapp text-lg"></i>
+                                        </div>
+                                        <span>(11) 99999-9999</span>
+                                    </li>
+                                    <li className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-flame-500 shrink-0">
+                                            <i className="fa-solid fa-phone text-sm"></i>
+                                        </div>
+                                        <span>0800 123 4567</span>
+                                    </li>
+                                    <li className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-flame-500 shrink-0">
+                                            <i className="fa-solid fa-envelope text-sm"></i>
+                                        </div>
+                                        <span>contato@flamegas.com.br</span>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
                             <p className="text-slate-500 text-sm">
-                                © 2026 FlameGás. Todos os direitos reservados.
+                                © 2026 FlameGás. Todos os direitos reservados. CNPJ: 00.000.000/0001-00.
                             </p>
-                            <div className="flex gap-4">
-                                <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-flame-500 hover:text-white hover:border-flame-500 transition-all">
-                                    <i className="fa-brands fa-instagram"></i>
+                            <div className="flex gap-3">
+                                <a href="#" className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-gradient-to-br hover:from-purple-500 hover:to-pink-500 hover:text-white hover:border-transparent transition-all hover:scale-110 shadow-lg">
+                                    <i className="fa-brands fa-instagram text-lg"></i>
                                 </a>
-                                <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-flame-500 hover:text-white hover:border-flame-500 transition-all">
-                                    <i className="fa-brands fa-facebook-f"></i>
+                                <a href="#" className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white hover:border-transparent transition-all hover:scale-110 shadow-lg">
+                                    <i className="fa-brands fa-facebook-f text-lg"></i>
                                 </a>
-                                <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-flame-500 hover:text-white hover:border-flame-500 transition-all">
-                                    <i className="fa-brands fa-tiktok"></i>
+                                <a href="#" className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-black hover:text-white hover:border-transparent transition-all hover:scale-110 shadow-lg">
+                                    <i className="fa-brands fa-tiktok text-lg"></i>
                                 </a>
                             </div>
                         </div>
