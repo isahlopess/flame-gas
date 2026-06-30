@@ -105,6 +105,31 @@ export default function Welcome({
         }
     ];
 
+    // FAQ & Testimonials Data
+    const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+    const testimonials = [
+        { name: "João Carlos", role: "Dono de Restaurante", text: "A entrega mais rápida que já vi. Quando acaba o gás no meio do almoço, o app salva a nossa vida!", rating: 4.8, avatar: "https://ui-avatars.com/api/?name=Joao+Carlos&background=f97316&color=fff", highlight: false },
+        { name: "Maria Silva", role: "Cliente Residencial", text: "Maravilhoso. Consigo ver o caminhão chegando no mapa igual Uber. Acabou a ansiedade de ficar esperando na porta, não troco por nada. O entregador foi super educado.", rating: 5, avatar: "https://ui-avatars.com/api/?name=Maria+Silva&background=0f172a&color=fff", highlight: true },
+        { name: "Pedro Henrique", role: "Síndico", text: "Instalação super segura e técnica. Os rapazes vêm uniformizados e testam tudo antes de ir embora. Recomendo para todos os condomínios da região.", rating: 4.9, avatar: "https://ui-avatars.com/api/?name=Pedro+Henrique&background=3b82f6&color=fff", highlight: false },
+        { name: "Ana Beatriz", role: "Cliente Residencial", text: "Preço justo e o gás dura muito mais do que das outras marcas que eu comprava. Recomendo sempre.", rating: 5, avatar: "https://ui-avatars.com/api/?name=Ana+Beatriz&background=f59e0b&color=fff", highlight: false },
+        { name: "Carlos Eduardo", role: "Dono de Padaria", text: "Parceria de anos! O atendimento corporativo é nota 10, nunca deixaram meu comércio na mão. O sistema de comodato é excelente e a manutenção impecável.", rating: 5, avatar: "https://ui-avatars.com/api/?name=Carlos+Eduardo&background=64748b&color=fff", highlight: false },
+        { name: "Juliana Costa", role: "Mãe de Família", text: "Poder parcelar o botijão no cartão direto no app foi um divisor de águas aqui em casa. Muito prático!", rating: 4.5, avatar: "https://ui-avatars.com/api/?name=Juliana+Costa&background=10b981&color=fff", highlight: false },
+        { name: "Roberto Alves", role: "Padeiro", text: "Gás de excelente qualidade. Nossos fornos mantêm a temperatura constante o dia todo. O atendimento via WhatsApp é super ágil.", rating: 5, avatar: "https://ui-avatars.com/api/?name=Roberto+Alves&background=8b5cf6&color=fff", highlight: false },
+        { name: "Fernanda Lima", role: "Cliente Residencial", text: "Amei a experiência! O aplicativo é muito fácil de usar e ainda ganhei desconto na primeira compra. Fidelizada com sucesso.", rating: 4.8, avatar: "https://ui-avatars.com/api/?name=Fernanda+Lima&background=ec4899&color=fff", highlight: false },
+        { name: "Lucas Mendes", role: "Gerente de Condomínio", text: "Fizemos um contrato para o condomínio inteiro e foi a melhor escolha. Os relatórios mensais de consumo são muito detalhados e o preço é imbatível.", rating: 5, avatar: "https://ui-avatars.com/api/?name=Lucas+Mendes&background=14b8a6&color=fff", highlight: true },
+        { name: "Camila Rocha", role: "Chef de Cozinha", text: "No restaurante, precisamos de chamas fortes e constantes. Desde que mudamos para a FlameGás, nosso tempo de preparo melhorou muito.", rating: 4.9, avatar: "https://ui-avatars.com/api/?name=Camila+Rocha&background=f43f5e&color=fff", highlight: false },
+        { name: "Sérgio Moraes", role: "Aposentado", text: "Antigamente eu tinha que carregar o botijão nas costas. Agora o rapaz vem, instala e ainda faz o teste do sabão. Serviço nota mil.", rating: 5, avatar: "https://ui-avatars.com/api/?name=Sergio+Moraes&background=0ea5e9&color=fff", highlight: false },
+        { name: "Amanda Souza", role: "Estudante", text: "Rachei o gás com minhas amigas da república e pagamos com PIX direto no aplicativo. Super rápido e o entregador chegou em 20 minutos!", rating: 4.7, avatar: "https://ui-avatars.com/api/?name=Amanda+Souza&background=84cc16&color=fff", highlight: false },
+    ];
+
+    const faqs = [
+        { question: "Como funciona a garantia do peso certo?", answer: "Nossos botijões passam por uma dupla checagem de pesagem digital antes de sair da base, e você pode conferir o lacre de inviolabilidade ao receber." },
+        { question: "Em quanto tempo meu gás chega?", answer: "Nosso sistema roteiriza o entregador mais próximo via GPS. O tempo médio na região atendida é de 15 a 30 minutos!" },
+        { question: "Quais as formas de pagamento?", answer: "Aceitamos PIX, Cartões de Crédito/Débito (na maquininha) e dinheiro. Tudo no momento da entrega." },
+        { question: "Vocês fazem a instalação?", answer: "Sim! A instalação é gratuita. Nossos técnicos certificados trocam o botijão, testam vazamentos e só vão embora quando o fogo acender em segurança." },
+    ];
+
     useEffect(() => {
         setParticles(
             Array.from({ length: 25 }).map((_, i) => ({
@@ -500,6 +525,229 @@ export default function Welcome({
                             />
                         </div>
                     </div>
+                </section>
+                <section id="avaliacoes" className="py-24 relative bg-slate-50 dark:bg-[#0a0f1c] overflow-hidden">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl sm:text-5xl font-heading font-extrabold text-slate-900 dark:text-white mb-6">
+                                Quem aprova, <span className="text-flame-500">comprova.</span>
+                            </h2>
+                            <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Milhares de fogões acesos e famílias tranquilas todos os dias. Não acredite apenas em nós, veja a quantidade absurda de clientes satisfeitos.</p>
+                        </div>
+                    </div>
+                    <div className="relative w-full max-w-7xl mx-auto h-[600px] overflow-hidden flex gap-4 sm:gap-6 px-4 sm:px-6 lg:px-8">
+                        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-slate-50 dark:from-[#0a0f1c] to-transparent z-10 pointer-events-none"></div>
+                        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-slate-50 dark:from-[#0a0f1c] to-transparent z-10 pointer-events-none"></div>
+                        <div className="w-full md:w-1/3 flex flex-col overflow-hidden relative">
+                            <motion.div
+                                className="flex flex-col gap-6 absolute w-full"
+                                animate={{ y: ["0%", "-50%"] }}
+                                transition={{ ease: "linear", duration: 35, repeat: Infinity }}
+                            >
+                                {[...testimonials.slice(0, 4), ...testimonials.slice(0, 4)].map((testimonial, idx) => (
+                                    <div key={idx} className="p-6 rounded-3xl bg-white dark:bg-navy-900/40 border border-slate-200 dark:border-white/5 shadow-sm">
+                                        <div className="flex items-center gap-1 text-amber-400 text-xs mb-4">
+                                            {Array.from({length: Math.floor(testimonial.rating)}).map((_, i) => (
+                                                <i key={i} className="fa-solid fa-star"></i>
+                                            ))}
+                                            {testimonial.rating % 1 !== 0 && <i className="fa-solid fa-star-half-stroke"></i>}
+                                        </div>
+                                        <p className="text-sm italic mb-6 text-slate-600 dark:text-slate-300">"{testimonial.text}"</p>
+                                        <div className="flex items-center gap-3">
+                                            <img src={testimonial.avatar} alt={testimonial.name} className="w-10 h-10 rounded-full" />
+                                            <div>
+                                                <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1">
+                                                    {testimonial.name} <i className="fa-solid fa-circle-check text-blue-500 text-[10px]"></i>
+                                                </h4>
+                                                <p className="text-[10px] text-slate-500">{testimonial.role}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </motion.div>
+                        </div>
+                        <div className="hidden md:flex w-1/3 flex-col overflow-hidden relative">
+                            <motion.div
+                                className="flex flex-col gap-6 absolute w-full"
+                                animate={{ y: ["-50%", "0%"] }}
+                                transition={{ ease: "linear", duration: 40, repeat: Infinity }}
+                            >
+                                {[...testimonials.slice(4, 8), ...testimonials.slice(4, 8)].map((testimonial, idx) => (
+                                    <div key={idx} className={`p-6 rounded-3xl border shadow-sm ${testimonial.highlight ? 'bg-slate-900 dark:bg-navy-950 border-flame-500/40' : 'bg-white dark:bg-navy-900/40 border-slate-200 dark:border-white/5'}`}>
+                                        <div className="flex items-center gap-1 text-amber-400 text-xs mb-4">
+                                            {Array.from({length: Math.floor(testimonial.rating)}).map((_, i) => (
+                                                <i key={i} className="fa-solid fa-star"></i>
+                                            ))}
+                                            {testimonial.rating % 1 !== 0 && <i className="fa-solid fa-star-half-stroke"></i>}
+                                        </div>
+                                        <p className={`text-sm italic mb-6 ${testimonial.highlight ? 'text-white' : 'text-slate-600 dark:text-slate-300'}`}>"{testimonial.text}"</p>
+                                        <div className="flex items-center gap-3">
+                                            <img src={testimonial.avatar} alt={testimonial.name} className="w-10 h-10 rounded-full" />
+                                            <div>
+                                                <h4 className={`text-sm font-bold flex items-center gap-1 ${testimonial.highlight ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
+                                                    {testimonial.name} <i className="fa-solid fa-circle-check text-blue-500 text-[10px]"></i>
+                                                </h4>
+                                                <p className={`text-[10px] ${testimonial.highlight ? 'text-slate-400' : 'text-slate-500'}`}>{testimonial.role}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </motion.div>
+                        </div>
+                        <div className="hidden lg:flex w-1/3 flex-col overflow-hidden relative">
+                            <motion.div
+                                className="flex flex-col gap-6 absolute w-full"
+                                animate={{ y: ["0%", "-50%"] }}
+                                transition={{ ease: "linear", duration: 45, repeat: Infinity }}
+                            >
+                                {[...testimonials.slice(8, 12), ...testimonials.slice(8, 12)].map((testimonial, idx) => (
+                                    <div key={idx} className={`p-6 rounded-3xl border shadow-sm ${testimonial.highlight ? 'bg-slate-900 dark:bg-navy-950 border-flame-500/40' : 'bg-white dark:bg-navy-900/40 border-slate-200 dark:border-white/5'}`}>
+                                        <div className="flex items-center gap-1 text-amber-400 text-xs mb-4">
+                                            {Array.from({length: Math.floor(testimonial.rating)}).map((_, i) => (
+                                                <i key={i} className="fa-solid fa-star"></i>
+                                            ))}
+                                            {testimonial.rating % 1 !== 0 && <i className="fa-solid fa-star-half-stroke"></i>}
+                                        </div>
+                                        <p className={`text-sm italic mb-6 ${testimonial.highlight ? 'text-white' : 'text-slate-600 dark:text-slate-300'}`}>"{testimonial.text}"</p>
+                                        <div className="flex items-center gap-3">
+                                            <img src={testimonial.avatar} alt={testimonial.name} className="w-10 h-10 rounded-full" />
+                                            <div>
+                                                <h4 className={`text-sm font-bold flex items-center gap-1 ${testimonial.highlight ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
+                                                    {testimonial.name} <i className="fa-solid fa-circle-check text-blue-500 text-[10px]"></i>
+                                                </h4>
+                                                <p className={`text-[10px] ${testimonial.highlight ? 'text-slate-400' : 'text-slate-500'}`}>{testimonial.role}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </motion.div>
+                        </div>
+                    </div>
+                </section>
+                <section id="faq" className="py-24 relative bg-slate-50 dark:bg-navy-950 overflow-hidden">
+                    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl sm:text-4xl font-heading font-extrabold text-slate-900 dark:text-white mb-4">
+                                Dúvidas <span className="text-flame-500">Frequentes</span>
+                            </h2>
+                            <p className="text-slate-500 dark:text-slate-400">Tudo o que você precisa saber antes de pedir.</p>
+                        </div>
+                        <div className="space-y-4">
+                            {faqs.map((faq, idx) => {
+                                const isOpen = activeFaq === idx;
+                                return (
+                                    <div
+                                        key={idx}
+                                        onClick={() => setActiveFaq(isOpen ? null : idx)}
+                                        className={`glass p-1 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen ? 'bg-flame-500/10 border border-flame-500/30 shadow-[0_0_15px_rgba(249,115,22,0.15)]' : 'bg-white dark:bg-navy-900 border border-slate-200 dark:border-white/5 hover:border-flame-500/30'}`}
+                                    >
+                                        <div className="px-6 py-5 flex justify-between items-center">
+                                            <h3 className={`font-bold transition-colors ${isOpen ? 'text-flame-500' : 'text-slate-900 dark:text-white'}`}>
+                                                {faq.question}
+                                            </h3>
+                                            <motion.div
+                                                animate={{ rotate: isOpen ? 180 : 0 }}
+                                                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isOpen ? 'bg-flame-500 text-white' : 'bg-slate-100 dark:bg-navy-800 text-slate-500'}`}
+                                            >
+                                                <i className={`fa-solid fa-chevron-down text-sm`}></i>
+                                            </motion.div>
+                                        </div>
+                                        <AnimatePresence>
+                                            {isOpen && (
+                                                <motion.div
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: "auto", opacity: 1 }}
+                                                    exit={{ height: 0, opacity: 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                    className="overflow-hidden"
+                                                >
+                                                    <div className="px-6 pb-6 pt-2 text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-navy-800/50 mt-2">
+                                                        {faq.answer}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+                </section>
+                <section id="download" className="relative pt-24 bg-navy-950 overflow-hidden">
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-flame-900/40 via-navy-950 to-navy-950 pointer-events-none"></div>
+                    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mb-24">
+                        <div className="glass bg-white/5 border border-white/10 rounded-[3rem] p-8 sm:p-16 text-center backdrop-blur-md shadow-2xl relative overflow-hidden">
+                            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-flame-500/20 rounded-full blur-[80px] pointer-events-none"></div>
+                            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-64 h-64 bg-amber-500/20 rounded-full blur-[80px] pointer-events-none"></div>
+                            <h2 className="text-4xl sm:text-5xl font-heading font-extrabold text-white mb-6">
+                                Pronto para a chama <span className="text-flame-500">perfeita?</span>
+                            </h2>
+                            <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-10">
+                                Baixe nosso aplicativo agora mesmo e ganhe 10% de desconto no seu primeiro pedido. Simples, rápido e seguro.
+                            </p>
+                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                                <button className="w-full sm:w-auto bg-flame-500 hover:bg-flame-600 text-white px-8 py-4 rounded-full font-bold transition-all flex items-center justify-center gap-3 hover:scale-105 hover:shadow-[0_0_30px_rgba(249,115,22,0.4)]">
+                                    <i className="fa-brands fa-apple text-xl"></i>
+                                    <span>App Store</span>
+                                </button>
+                                <button className="w-full sm:w-auto bg-white/10 hover:bg-white/20 border border-white/20 text-white px-8 py-4 rounded-full font-bold transition-all flex items-center justify-center gap-3 hover:scale-105">
+                                    <i className="fa-brands fa-google-play text-xl"></i>
+                                    <span>Google Play</span>
+                                </button>
+                            </div>
+                            <div className="mt-8 text-sm text-slate-400">
+                                Ou prefere falar com um humano? <a href="#" className="text-flame-500 font-bold hover:underline">Peça pelo WhatsApp</a>
+                            </div>
+                        </div>
+                    </div>
+                    <footer className="border-t border-white/5 pb-12 pt-12 relative z-10 text-center sm:text-left">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                            <div className="col-span-1 md:col-span-2">
+                                <div className="flex items-center justify-center sm:justify-start gap-2 mb-4">
+                                    <img src="/images/fire.png" alt="Logo FlameGás" className="w-8 h-8" />
+                                    <span className="text-2xl font-heading font-extrabold text-white tracking-tight">
+                                        Flame<span className="text-flame-500">Gás</span>
+                                    </span>
+                                </div>
+                                <p className="text-slate-400 text-sm max-w-md mx-auto sm:mx-0">
+                                    Revolucionando a entrega de gás de cozinha. Mais velocidade, segurança e transparência para a sua família ou negócio.
+                                </p>
+                            </div>
+                            <div>
+                                <h4 className="text-white font-bold mb-4">Links Rápidos</h4>
+                                <ul className="space-y-2 text-slate-400 text-sm">
+                                    <li><a href="#servicos" className="hover:text-flame-500 transition-colors">Serviços</a></li>
+                                    <li><a href="#como-funciona" className="hover:text-flame-500 transition-colors">Como Funciona</a></li>
+                                    <li><a href="#faq" className="hover:text-flame-500 transition-colors">Dúvidas Frequentes</a></li>
+                                    <li><a href="#" className="hover:text-flame-500 transition-colors">Seja um Entregador</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="text-white font-bold mb-4">Fale Conosco</h4>
+                                <ul className="space-y-2 text-slate-400 text-sm">
+                                    <li><i className="fa-brands fa-whatsapp mr-2 text-flame-500"></i> (11) 99999-9999</li>
+                                    <li><i className="fa-solid fa-phone mr-2 text-flame-500"></i> 0800 123 4567</li>
+                                    <li><i className="fa-solid fa-envelope mr-2 text-flame-500"></i> contato@flamegas.com.br</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <p className="text-slate-500 text-sm">
+                                © 2026 FlameGás. Todos os direitos reservados.
+                            </p>
+                            <div className="flex gap-4">
+                                <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-flame-500 hover:text-white hover:border-flame-500 transition-all">
+                                    <i className="fa-brands fa-instagram"></i>
+                                </a>
+                                <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-flame-500 hover:text-white hover:border-flame-500 transition-all">
+                                    <i className="fa-brands fa-facebook-f"></i>
+                                </a>
+                                <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-flame-500 hover:text-white hover:border-flame-500 transition-all">
+                                    <i className="fa-brands fa-tiktok"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </footer>
                 </section>
             </main>
         </div>
