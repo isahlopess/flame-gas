@@ -124,10 +124,10 @@ export default function Welcome({
     ];
 
     const faqs = [
-        { question: "Como funciona a garantia do peso certo?", answer: "Nossos botijões passam por uma dupla checagem de pesagem digital antes de sair da base, e você pode conferir o lacre de inviolabilidade ao receber." },
-        { question: "Em quanto tempo meu gás chega?", answer: "Nosso sistema roteiriza o entregador mais próximo via GPS. O tempo médio na região atendida é de 15 a 30 minutos!" },
-        { question: "Quais as formas de pagamento?", answer: "Aceitamos PIX, Cartões de Crédito/Débito (na maquininha) e dinheiro. Tudo no momento da entrega." },
-        { question: "Vocês fazem a instalação?", answer: "Sim! A instalação é gratuita. Nossos técnicos certificados trocam o botijão, testam vazamentos e só vão embora quando o fogo acender em segurança." },
+        { question: "Como funciona a garantia do peso certo?", answer: "Nossos botijões passam por uma dupla checagem de pesagem digital antes de sair da base, e você pode conferir o lacre de inviolabilidade ao receber.", icon: "fa-solid fa-weight-scale", color: "text-blue-500", bg: "bg-blue-500/10" },
+        { question: "Em quanto tempo meu gás chega?", answer: "Nosso sistema roteiriza o entregador mais próximo via GPS. O tempo médio na região atendida é de 15 a 30 minutos!", icon: "fa-solid fa-stopwatch", color: "text-flame-500", bg: "bg-flame-500/10" },
+        { question: "Quais as formas de pagamento?", answer: "Aceitamos PIX, Cartões de Crédito/Débito (na maquininha) e dinheiro. Tudo no momento da entrega.", icon: "fa-solid fa-credit-card", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+        { question: "Vocês fazem a instalação?", answer: "Sim! A instalação é gratuita. Nossos técnicos certificados trocam o botijão, testam vazamentos e só vão embora quando o fogo acender em segurança.", icon: "fa-solid fa-wrench", color: "text-amber-500", bg: "bg-amber-500/10" },
     ];
 
     useEffect(() => {
@@ -624,52 +624,87 @@ export default function Welcome({
                         </div>
                     </div>
                 </section>
-                <section id="faq" className="py-24 relative bg-slate-50 dark:bg-navy-950 overflow-hidden">
-                    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl sm:text-4xl font-heading font-extrabold text-slate-900 dark:text-white mb-4">
-                                Dúvidas <span className="text-flame-500">Frequentes</span>
-                            </h2>
-                            <p className="text-slate-500 dark:text-slate-400">Tudo o que você precisa saber antes de pedir.</p>
-                        </div>
-                        <div className="space-y-4">
-                            {faqs.map((faq, idx) => {
-                                const isOpen = activeFaq === idx;
-                                return (
-                                    <div
-                                        key={idx}
-                                        onClick={() => setActiveFaq(isOpen ? null : idx)}
-                                        className={`glass p-1 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen ? 'bg-flame-500/10 border border-flame-500/30 shadow-[0_0_15px_rgba(249,115,22,0.15)]' : 'bg-white dark:bg-navy-900 border border-slate-200 dark:border-white/5 hover:border-flame-500/30'}`}
-                                    >
-                                        <div className="px-6 py-5 flex justify-between items-center">
-                                            <h3 className={`font-bold transition-colors ${isOpen ? 'text-flame-500' : 'text-slate-900 dark:text-white'}`}>
-                                                {faq.question}
-                                            </h3>
-                                            <motion.div
-                                                animate={{ rotate: isOpen ? 180 : 0 }}
-                                                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isOpen ? 'bg-flame-500 text-white' : 'bg-slate-100 dark:bg-navy-800 text-slate-500'}`}
-                                            >
-                                                <i className={`fa-solid fa-chevron-down text-sm`}></i>
-                                            </motion.div>
-                                        </div>
-                                        <AnimatePresence>
-                                            {isOpen && (
-                                                <motion.div
-                                                    initial={{ height: 0, opacity: 0 }}
-                                                    animate={{ height: "auto", opacity: 1 }}
-                                                    exit={{ height: 0, opacity: 0 }}
-                                                    transition={{ duration: 0.3 }}
-                                                    className="overflow-hidden"
-                                                >
-                                                    <div className="px-6 pb-6 pt-2 text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-navy-800/50 mt-2">
-                                                        {faq.answer}
-                                                    </div>
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
+                <section id="faq" className="py-32 relative bg-white dark:bg-[#060a13] overflow-hidden border-t border-slate-200 dark:border-white/5">
+                    <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-flame-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                        <div className="flex flex-col lg:flex-row gap-16 items-center">
+                            <div className="w-full lg:w-5/12">
+                                <h2 className="text-4xl sm:text-5xl font-heading font-extrabold text-slate-900 dark:text-white mb-6">
+                                    Dúvidas <span className="text-flame-500">Frequentes</span>
+                                </h2>
+                                <p className="text-lg text-slate-500 dark:text-slate-400 mb-12 leading-relaxed">
+                                    Transparência é o nosso combustível. Reunimos as perguntas mais comuns para que você peça seu gás com total tranquilidade.
+                                </p>
+                                <div className="hidden lg:block relative w-full aspect-square rounded-full border border-slate-200 dark:border-white/10 p-8">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-flame-500/5 to-transparent rounded-full m-8"></div>
+                                    <div className="w-full h-full bg-slate-50 dark:bg-navy-950 rounded-full shadow-2xl flex items-center justify-center border border-slate-200 dark:border-white/5 relative">
+                                        <i className="fa-solid fa-clipboard-question text-[12rem] text-slate-200 dark:text-slate-800"></i>
+                                        <motion.div animate={{ y: [-5, 5, -5] }} transition={{ duration: 4, repeat: Infinity, delay: 1 }} className="absolute -top-4 right-10 w-16 h-16 bg-white dark:bg-navy-900 text-blue-500 rounded-2xl flex items-center justify-center shadow-[0_10px_40px_rgba(59,130,246,0.2)] border border-blue-500/20">
+                                            <i className="fa-solid fa-weight-scale text-2xl"></i>
+                                        </motion.div>
+                                        <motion.div animate={{ y: [5, -5, 5] }} transition={{ duration: 5, repeat: Infinity, delay: 2 }} className="absolute bottom-10 -left-6 w-16 h-16 bg-white dark:bg-navy-900 text-emerald-500 rounded-2xl flex items-center justify-center shadow-[0_10px_40px_rgba(16,185,129,0.2)] border border-emerald-500/20">
+                                            <i className="fa-solid fa-credit-card text-2xl"></i>
+                                        </motion.div>
+                                        <motion.div animate={{ y: [-8, 8, -8] }} transition={{ duration: 5.5, repeat: Infinity, delay: 0.5 }} className="absolute -bottom-2 right-4 w-16 h-16 bg-white dark:bg-navy-900 text-amber-500 rounded-2xl flex items-center justify-center shadow-[0_10px_40px_rgba(245,158,11,0.2)] border border-amber-500/20">
+                                            <i className="fa-solid fa-fire text-2xl"></i>
+                                        </motion.div>
+                                        <motion.div animate={{ y: [4, -4, 4] }} transition={{ duration: 6, repeat: Infinity, delay: 1.5 }} className="absolute top-1/4 -left-4 w-12 h-12 bg-white dark:bg-navy-900 text-flame-500 rounded-2xl flex items-center justify-center shadow-[0_10px_40px_rgba(249,115,22,0.2)] border border-flame-500/20">
+                                            <i className="fa-solid fa-stopwatch text-xl"></i>
+                                        </motion.div>
                                     </div>
-                                )
-                            })}
+                                </div>
+                            </div>
+                            <div className="w-full lg:w-7/12">
+                                <div className="space-y-4">
+                                    {faqs.map((faq, idx) => {
+                                        const isOpen = activeFaq === idx;
+                                        return (
+                                            <div
+                                                key={idx}
+                                                onClick={() => setActiveFaq(isOpen ? null : idx)}
+                                                className={`group relative overflow-hidden rounded-[2rem] cursor-pointer transition-all duration-300 ${isOpen ? 'bg-slate-50 dark:bg-navy-950 shadow-lg' : 'bg-white dark:bg-navy-900/40 border border-slate-200 dark:border-white/5 hover:border-flame-500/30 shadow-sm hover:shadow-md'}`}
+                                            >
+                                                <div className={`absolute left-0 top-0 bottom-0 w-2 transition-colors duration-300 ${isOpen ? 'bg-flame-500' : 'bg-transparent group-hover:bg-flame-500/30'}`}></div>
+                                                <div className="px-6 py-6 sm:px-8 sm:py-8 ml-2">
+                                                    <div className="flex justify-between items-start gap-4">
+                                                        <div className="flex gap-4 sm:gap-6 items-start">
+                                                            <div className={`mt-1 shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${isOpen ? faq.bg + ' scale-110' : 'bg-slate-100 dark:bg-slate-800'}`}>
+                                                                <i className={`${faq.icon} text-xl ${isOpen ? faq.color : 'text-slate-400'}`}></i>
+                                                            </div>
+                                                            <div>
+                                                                <h3 className={`text-lg sm:text-xl font-bold leading-tight transition-colors ${isOpen ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300 group-hover:text-flame-500'}`}>
+                                                                    {faq.question}
+                                                                </h3>
+                                                                <AnimatePresence>
+                                                                    {isOpen && (
+                                                                        <motion.div
+                                                                            initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                                                                            animate={{ height: "auto", opacity: 1, marginTop: 16 }}
+                                                                            exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                                                                            transition={{ duration: 0.3 }}
+                                                                            className="overflow-hidden"
+                                                                        >
+                                                                            <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-base">
+                                                                                {faq.answer}
+                                                                            </p>
+                                                                        </motion.div>
+                                                                    )}
+                                                                </AnimatePresence>
+                                                            </div>
+                                                        </div>
+                                                        <motion.div
+                                                            animate={{ rotate: isOpen ? 180 : 0 }}
+                                                            className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border transition-all ${isOpen ? 'border-flame-500 text-flame-500 bg-white dark:bg-navy-900 shadow-md' : 'border-slate-200 dark:border-white/10 text-slate-400'}`}
+                                                        >
+                                                            <i className={`fa-solid fa-chevron-down text-sm`}></i>
+                                                        </motion.div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
