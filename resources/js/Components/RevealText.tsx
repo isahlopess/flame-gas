@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 
 interface RevealTextProps {
     words: (string | React.ReactNode)[];
@@ -6,7 +6,7 @@ interface RevealTextProps {
 }
 
 export default function RevealText({ words, className = '' }: RevealTextProps) {
-    const container = {
+    const container: Variants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
@@ -14,7 +14,7 @@ export default function RevealText({ words, className = '' }: RevealTextProps) {
         },
     };
 
-    const child = {
+    const child: Variants = {
         visible: {
             opacity: 1,
             y: 0,
