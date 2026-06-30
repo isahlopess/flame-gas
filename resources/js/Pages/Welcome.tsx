@@ -9,6 +9,7 @@ import TiltWrapper from '@/Components/TiltWrapper';
 import FloatingWhatsApp from '@/Components/FloatingWhatsApp';
 import AnimatedCounter from '@/Components/AnimatedCounter';
 import RevealText from '@/Components/RevealText';
+import UserDropdown from '@/Components/UserDropdown';
 
 export default function Welcome({
     auth,
@@ -202,14 +203,8 @@ export default function Welcome({
                                     <span className="absolute inset-x-4 bottom-1.5 h-0.5 bg-flame-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full opacity-0 group-hover:opacity-100"></span>
                                 </a>
                             ))}
-                            <div className={`w-px h-6 mx-2 ${isScrolled ? 'bg-slate-200 dark:bg-navy-800' : 'bg-white/20'}`}></div>
                             {auth.user ? (
-                                <Link
-                                    href={route('dashboard')}
-                                    className={`px-4 py-2 rounded-full transition-colors font-semibold ${isScrolled ? 'text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/5' : 'text-white hover:bg-white/10'}`}
-                                >
-                                    Dashboard
-                                </Link>
+                                <UserDropdown user={auth.user} isScrolled={isScrolled} />
                             ) : (
                                 <div className="flex items-center gap-2 pl-2">
                                     <Link

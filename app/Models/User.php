@@ -23,6 +23,12 @@ class User extends Authenticatable
         'email',
         'role',
         'password',
+        'phone',
+        'address',
+        'city',
+        'neighborhood',
+        'complement',
+        'avatar',
     ];
 
     /**
@@ -46,5 +52,29 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->role === 'customer';
+    }
+
+    public function isEmployee(): bool
+    {
+        return $this->role === 'employee';
+    }
+
+    public function isManager(): bool
+    {
+        return $this->role === 'manager';
+    }
+
+    public function dashboardRoute(): string
+    {
+        return match ($this->role) {
+            'manager' => '/admin',
+            'employee' => '/hub',
+            default => '/',
+        };
     }
 }

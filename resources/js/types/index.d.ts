@@ -3,6 +3,13 @@ export interface User {
     name: string;
     email: string;
     email_verified_at?: string;
+    role: 'customer' | 'employee' | 'manager';
+    phone?: string;
+    address?: string;
+    city?: string;
+    neighborhood?: string;
+    complement?: string;
+    avatar?: string;
 }
 
 export type PageProps<
