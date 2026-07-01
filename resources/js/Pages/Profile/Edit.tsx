@@ -19,7 +19,7 @@ function EditContent({
     const [activeTab, setActiveTab] = useState('orders');
 
     const tabs = [
-        { id: 'orders', label: 'Meus Pedidos', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
+        { id: 'orders', label: user.role === 'employee' ? 'Minhas Entregas' : 'Meus Pedidos', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
         { id: 'profile', label: 'Meus Dados', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
         { id: 'security', label: 'Segurança', icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' },
         { id: 'danger', label: 'Zona de Risco', icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' },
@@ -35,7 +35,7 @@ function EditContent({
                     <div className="mb-8 flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">
-                                Central do Cliente
+                                {user.role === 'employee' ? 'Central do Motorista' : 'Central do Cliente'}
                             </h1>
                             <p className="mt-2 text-gray-400">
                                 Olá, {user.name}! Gerencie seus dados e preferências de entrega.

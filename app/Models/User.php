@@ -28,6 +28,8 @@ class User extends Authenticatable
         'neighborhood',
         'complement',
         'avatar',
+        'vehicle_type',
+        'vehicle_plate',
     ];
 
     /**

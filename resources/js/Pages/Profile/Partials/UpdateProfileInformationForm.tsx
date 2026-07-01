@@ -17,14 +17,27 @@ export default function UpdateProfileInformation({
 }) {
     const user = usePage().props.auth.user;
 
+    interface FormState {
+        name: string;
+        email: string;
+        phone: string;
+        address: string;
+        neighborhood: string;
+        complement: string;
+        vehicle_type: string;
+        vehicle_plate: string;
+    }
+
     const { data, setData, patch, errors, processing, recentlySuccessful } =
-        useForm({
+        useForm<FormState>({
             name: user.name,
             email: user.email,
             phone: user.phone || '',
             address: user.address || '',
             neighborhood: user.neighborhood || '',
             complement: user.complement || '',
+            vehicle_type: user.vehicle_type || '',
+            vehicle_plate: user.vehicle_plate || '',
         });
 
     const submit: FormEventHandler = (e) => {
@@ -81,37 +94,73 @@ export default function UpdateProfileInformation({
                         />
                         <InputError className="mt-2" message={errors.phone} />
                     </div>
-                    <div className="md:col-span-2">
-                        <InputLabel htmlFor="address" value="Endereço (Rua e Número)" className="text-gray-300" />
-                        <TextInput
-                            id="address"
-                            className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
-                            value={data.address}
-                            onChange={(e) => setData('address', e.target.value)}
-                            placeholder="Ex: Av. Principal, 123"
-                        />
-                        <InputError className="mt-2" message={errors.address} />
-                    </div>
-                    <div>
-                        <InputLabel htmlFor="neighborhood" value="Bairro" className="text-gray-300" />
-                        <TextInput
-                            id="neighborhood"
-                            className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
-                            value={data.neighborhood}
-                            onChange={(e) => setData('neighborhood', e.target.value)}
-                        />
-                        <InputError className="mt-2" message={errors.neighborhood} />
-                    </div>
-                    <div>
-                        <InputLabel htmlFor="complement" value="Complemento (Opcional)" className="text-gray-300" />
-                        <TextInput
-                            id="complement"
-                            className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
-                            value={data.complement}
-                            onChange={(e) => setData('complement', e.target.value)}
-                        />
-                        <InputError className="mt-2" message={errors.complement} />
-                    </div>
+                    {user.role === 'customer' ? (
+                        <>
+                            <div className="md:col-span-2">
+                                <InputLabel htmlFor="address" value="Endereço (Rua e Número)" className="text-gray-300" />
+                                <TextInput
+                                    id="address"
+                                    className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
+                                    value={data.address}
+                                    onChange={(e) => setData('address', e.target.value)}
+                                    placeholder="Ex: Av. Principal, 123"
+                                />
+                                <InputError className="mt-2" message={errors.address} />
+                            </div>
+                            <div>
+                                <InputLabel htmlFor="neighborhood" value="Bairro" className="text-gray-300" />
+                                <TextInput
+                                    id="neighborhood"
+                                    className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
+                                    value={data.neighborhood}
+                                    onChange={(e) => setData('neighborhood', e.target.value)}
+                                />
+                                <InputError className="mt-2" message={errors.neighborhood} />
+                            </div>
+                            <div>
+                                <InputLabel htmlFor="complement" value="Complemento (Opcional)" className="text-gray-300" />
+                                <TextInput
+                                    id="complement"
+                                    className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
+                                    value={data.complement}
+                                    onChange={(e) => setData('complement', e.target.value)}
+                                />
+                                <InputError className="mt-2" message={errors.complement} />
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div>
+                                <InputLabel htmlFor="vehicle_type" value="Tipo de Veículo" className="text-gray-300" />
+                                <select
+                                    id="vehicle_type"
+                                    className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl py-3 px-4"
+                                    value={data.vehicle_type}
+                                    onChange={(e) => setData('vehicle_type', e.target.value)}
+                                >
+                                    <option value="">Selecione o tipo</option>
+                                    <option value="Moto">Moto</option>
+                                    <option value="Carro">Carro de Passeio</option>
+                                    <option value="Caminhonete">Caminhonete (Fiorino, Strada, Saveiro)</option>
+                                    <option value="Caminhao">Caminhão Padrão</option>
+                                </select>
+                                <InputError className="mt-2" message={errors.vehicle_type} />
+                            </div>
+                            <div>
+                                <InputLabel htmlFor="vehicle_plate" value="Placa do Veículo" className="text-gray-300" />
+                                <TextInput
+                                    id="vehicle_plate"
+                                    className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl uppercase"
+                                    value={data.vehicle_plate}
+                                    onChange={(e) => setData('vehicle_plate', e.target.value.toUpperCase())}
+                                    placeholder="Ex: ABC-1234"
+                                    pattern="[A-Za-z]{3}-?[0-9][A-Za-z0-9][0-9]{2}"
+                                    title="A placa deve ser no formato ABC-1234 ou padrão Mercosul ABC1D23"
+                                />
+                                <InputError className="mt-2" message={errors.vehicle_plate} />
+                            </div>
+                        </>
+                    )}
                 </div>
                 {mustVerifyEmail && user.email_verified_at === null && (
                     <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl">

@@ -10,6 +10,8 @@ export interface User {
     neighborhood?: string;
     complement?: string;
     avatar?: string;
+    vehicle_type?: string;
+    vehicle_plate?: string;
 }
 
 export type PageProps<

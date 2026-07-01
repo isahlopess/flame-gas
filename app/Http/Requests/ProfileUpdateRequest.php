@@ -30,6 +30,13 @@ class ProfileUpdateRequest extends FormRequest
             'address' => ['nullable', 'string', 'max:255'],
             'neighborhood' => ['nullable', 'string', 'max:100'],
             'complement' => ['nullable', 'string', 'max:100'],
+            'vehicle_type' => ['nullable', 'string', 'max:50'],
+            'vehicle_plate' => [
+                'nullable',
+                'string',
+                'max:20',
+                'regex:/^[a-zA-Z]{3}-?[0-9][a-zA-Z0-9][0-9]{2}$/',
+            ],
         ];
     }
 }

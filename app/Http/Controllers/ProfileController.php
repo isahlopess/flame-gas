@@ -18,10 +18,18 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
-        $orders = \App\Models\Order::with(['items.product', 'driver'])
-            ->where('user_id', $request->user()->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $user = $request->user();
+        
+        $query = \App\Models\Order::with(['items.product', 'driver', 'user'])
+            ->orderBy('created_at', 'desc');
+            
+        if ($user->isEmployee()) {
+            $query->where('driver_id', $user->id);
+        } else {
+            $query->where('user_id', $user->id);
+        }
+        
+        $orders = $query->get();
 
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,

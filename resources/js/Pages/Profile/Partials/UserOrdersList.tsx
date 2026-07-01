@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Truck, CheckCircle2, Clock, MapPin, Package, XCircle } from 'lucide-react';
+import { ShoppingBag, Truck, CheckCircle2, Clock, MapPin, Package, XCircle, User } from 'lucide-react';
+import { usePage } from '@inertiajs/react';
 
 interface OrderItem {
     id: number;
@@ -22,25 +23,40 @@ interface Order {
     driver?: {
         name: string;
     };
+    user?: {
+        name: string;
+        phone: string;
+        address: string;
+        neighborhood: string;
+    };
 }
 
 export default function UserOrdersList({ orders }: { orders: Order[] }) {
+    const user = usePage().props.auth.user as any;
+    const isEmployee = user.role === 'employee';
+
     if (!orders || orders.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="w-24 h-24 bg-gray-800/50 rounded-full flex items-center justify-center mb-6">
                     <ShoppingBag className="w-12 h-12 text-gray-500" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-100 mb-2">Nenhum pedido ainda</h3>
+                <h3 className="text-2xl font-bold text-gray-100 mb-2">
+                    {isEmployee ? 'Nenhuma entrega ainda' : 'Nenhum pedido ainda'}
+                </h3>
                 <p className="text-gray-400 mb-8 max-w-md">
-                    Você ainda não fez nenhum pedido de botijão com a FlameGás. Que tal experimentar a entrega mais rápida da região?
+                    {isEmployee 
+                        ? 'Você ainda não realizou nenhuma entrega pela FlameGás. Fique de olho no Hub!' 
+                        : 'Você ainda não fez nenhum pedido de botijão com a FlameGás. Que tal experimentar a entrega mais rápida da região?'}
                 </p>
-                <a
-                    href="/"
-                    className="bg-flame-500 hover:bg-flame-600 text-white font-bold py-3 px-8 rounded-full transition-all shadow-lg shadow-flame-500/20"
-                >
-                    Fazer meu primeiro pedido
-                </a>
+                {!isEmployee && (
+                    <a
+                        href="/"
+                        className="bg-flame-500 hover:bg-flame-600 text-white font-bold py-3 px-8 rounded-full transition-all shadow-lg shadow-flame-500/20"
+                    >
+                        Fazer meu primeiro pedido
+                    </a>
+                )}
             </div>
         );
     }
@@ -62,10 +78,12 @@ export default function UserOrdersList({ orders }: { orders: Order[] }) {
                 <div>
                     <h2 className="text-2xl font-bold text-gray-100 mb-2 flex items-center gap-2">
                         <ShoppingBag className="w-6 h-6 text-flame-500" />
-                        Histórico de Pedidos
+                        {isEmployee ? 'Histórico de Entregas' : 'Histórico de Pedidos'}
                     </h2>
                     <p className="text-sm text-gray-400">
-                        Acompanhe seus pedidos em tempo real ou reveja suas compras anteriores.
+                        {isEmployee 
+                            ? 'Acompanhe as entregas que você já realizou.' 
+                            : 'Acompanhe seus pedidos em tempo real ou reveja suas compras anteriores.'}
                     </p>
                 </div>
             </header>
@@ -126,19 +144,35 @@ export default function UserOrdersList({ orders }: { orders: Order[] }) {
                                             </div>
                                         </div>
                                     </div>
-                                    {order.driver && (
+                                    {isEmployee && order.user ? (
                                         <div>
-                                            <h4 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Entrega</h4>
-                                            <div className="bg-gray-950/50 p-4 rounded-xl border border-gray-800/50 flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
-                                                    <Truck className="w-5 h-5 text-gray-400" />
+                                            <h4 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Cliente</h4>
+                                            <div className="bg-gray-950/50 p-4 rounded-xl border border-gray-800/50 flex items-start gap-3">
+                                                <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                                    <User className="w-5 h-5 text-gray-400" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-gray-400 text-sm">Motorista Responsável</p>
-                                                    <p className="text-gray-200 font-medium">{order.driver.name}</p>
+                                                    <p className="text-gray-200 font-medium">{order.user.name}</p>
+                                                    <p className="text-gray-400 text-sm mt-1">{order.user.phone}</p>
+                                                    <p className="text-gray-400 text-sm">{order.user.address}, {order.user.neighborhood}</p>
                                                 </div>
                                             </div>
                                         </div>
+                                    ) : (
+                                        order.driver && (
+                                            <div>
+                                                <h4 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Entrega</h4>
+                                                <div className="bg-gray-950/50 p-4 rounded-xl border border-gray-800/50 flex items-center gap-3">
+                                                    <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
+                                                        <Truck className="w-5 h-5 text-gray-400" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-gray-400 text-sm">Motorista Responsável</p>
+                                                        <p className="text-gray-200 font-medium">{order.driver.name}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )
                                     )}
                                 </div>
                             </div>
