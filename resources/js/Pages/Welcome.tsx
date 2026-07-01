@@ -39,7 +39,7 @@ function WelcomeContent({
 
     const servicesData = [
         {
-            id: 'p13',
+            id: 1,
             icon: "fa-solid fa-house",
             title: "Para sua Casa",
             subtitle: "O fogão sempre aceso",
@@ -54,7 +54,7 @@ function WelcomeContent({
             category: "Gás Residencial"
         },
         {
-            id: 'p45',
+            id: 2,
             icon: "fa-solid fa-industry",
             title: "Para seu Negócio",
             subtitle: "O fogo não pode apagar",
@@ -69,7 +69,7 @@ function WelcomeContent({
             category: "Gás Comercial"
         },
         {
-            id: 'agua',
+            id: 3,
             icon: "fa-solid fa-glass-water",
             title: "Água Mineral",
             subtitle: "Saúde e hidratação",
@@ -84,7 +84,7 @@ function WelcomeContent({
             category: "Água"
         },
         {
-            id: 'acessorios',
+            id: 4,
             icon: "fa-solid fa-wrench",
             title: "Acessórios",
             subtitle: "Segurança em primeiro lugar",

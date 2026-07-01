@@ -21,94 +21,136 @@ export default function UpdateProfileInformation({
         useForm({
             name: user.name,
             email: user.email,
+            phone: user.phone || '',
+            address: user.address || '',
+            neighborhood: user.neighborhood || '',
+            complement: user.complement || '',
         });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-
         patch(route('profile.update'));
     };
 
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    Profile Information
+                <h2 className="text-2xl font-bold text-gray-100 mb-2">
+                    Dados Pessoais e Entrega
                 </h2>
-
-                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    Update your account's profile information and email address.
+                <p className="text-sm text-gray-400">
+                    Mantenha seus dados atualizados para entregas mais rápidas.
                 </p>
             </header>
-
-            <form onSubmit={submit} className="mt-6 space-y-6">
-                <div>
-                    <InputLabel htmlFor="name" value="Name" />
-
-                    <TextInput
-                        id="name"
-                        className="mt-1 block w-full"
-                        value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
-                        required
-                        isFocused
-                        autoComplete="name"
-                    />
-
-                    <InputError className="mt-2" message={errors.name} />
-                </div>
-
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        className="mt-1 block w-full"
-                        value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
-                        required
-                        autoComplete="username"
-                    />
-
-                    <InputError className="mt-2" message={errors.email} />
-                </div>
-
-                {mustVerifyEmail && user.email_verified_at === null && (
+            <form onSubmit={submit} className="mt-8 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="md:col-span-2">
+                        <InputLabel htmlFor="name" value="Nome Completo" className="text-gray-300" />
+                        <TextInput
+                            id="name"
+                            className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
+                            value={data.name}
+                            onChange={(e) => setData('name', e.target.value)}
+                            required
+                            autoComplete="name"
+                        />
+                        <InputError className="mt-2" message={errors.name} />
+                    </div>
                     <div>
-                        <p className="mt-2 text-sm text-gray-800 dark:text-gray-200">
-                            Your email address is unverified.
+                        <InputLabel htmlFor="email" value="E-mail" className="text-gray-300" />
+                        <TextInput
+                            id="email"
+                            type="email"
+                            className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
+                            value={data.email}
+                            onChange={(e) => setData('email', e.target.value)}
+                            required
+                            autoComplete="username"
+                        />
+                        <InputError className="mt-2" message={errors.email} />
+                    </div>
+                    <div>
+                        <InputLabel htmlFor="phone" value="WhatsApp / Celular" className="text-gray-300" />
+                        <TextInput
+                            id="phone"
+                            className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
+                            value={data.phone}
+                            onChange={(e) => setData('phone', e.target.value)}
+                            placeholder="(00) 00000-0000"
+                            autoComplete="tel"
+                        />
+                        <InputError className="mt-2" message={errors.phone} />
+                    </div>
+                    <div className="md:col-span-2">
+                        <InputLabel htmlFor="address" value="Endereço (Rua e Número)" className="text-gray-300" />
+                        <TextInput
+                            id="address"
+                            className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
+                            value={data.address}
+                            onChange={(e) => setData('address', e.target.value)}
+                            placeholder="Ex: Av. Principal, 123"
+                        />
+                        <InputError className="mt-2" message={errors.address} />
+                    </div>
+                    <div>
+                        <InputLabel htmlFor="neighborhood" value="Bairro" className="text-gray-300" />
+                        <TextInput
+                            id="neighborhood"
+                            className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
+                            value={data.neighborhood}
+                            onChange={(e) => setData('neighborhood', e.target.value)}
+                        />
+                        <InputError className="mt-2" message={errors.neighborhood} />
+                    </div>
+                    <div>
+                        <InputLabel htmlFor="complement" value="Complemento (Opcional)" className="text-gray-300" />
+                        <TextInput
+                            id="complement"
+                            className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
+                            value={data.complement}
+                            onChange={(e) => setData('complement', e.target.value)}
+                        />
+                        <InputError className="mt-2" message={errors.complement} />
+                    </div>
+                </div>
+                {mustVerifyEmail && user.email_verified_at === null && (
+                    <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl">
+                        <p className="text-sm text-orange-400">
+                            Seu e-mail ainda não foi verificado.
                             <Link
                                 href={route('verification.send')}
                                 method="post"
                                 as="button"
-                                className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
+                                className="ml-2 font-bold underline hover:text-orange-300 focus:outline-none"
                             >
-                                Click here to re-send the verification email.
+                                Clique aqui para reenviar o e-mail.
                             </Link>
                         </p>
-
                         {status === 'verification-link-sent' && (
-                            <div className="mt-2 text-sm font-medium text-green-600 dark:text-green-400">
-                                A new verification link has been sent to your
-                                email address.
+                            <div className="mt-2 text-sm font-medium text-green-400">
+                                Um novo link foi enviado para seu e-mail!
                             </div>
                         )}
                     </div>
                 )}
-
-                <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
-
+                <div className="flex items-center gap-4 pt-6 border-t border-gray-800">
+                    <PrimaryButton disabled={processing} className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-8 py-3 rounded-xl shadow-lg shadow-orange-500/20 transition-all border-none">
+                        Salvar Informações
+                    </PrimaryButton>
                     <Transition
                         show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
+                        enter="transition ease-in-out duration-300"
+                        enterFrom="opacity-0 translate-y-2"
+                        enterTo="opacity-100 translate-y-0"
+                        leave="transition ease-in-out duration-300"
+                        leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Saved.
+                        <p className="text-sm font-medium text-green-400 flex items-center gap-2">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Atualizado com sucesso!
                         </p>
                     </Transition>
                 </div>

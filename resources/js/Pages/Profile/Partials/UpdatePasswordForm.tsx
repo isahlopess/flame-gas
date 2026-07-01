@@ -5,7 +5,6 @@ import TextInput from '@/Components/TextInput';
 import { Transition } from '@headlessui/react';
 import { useForm } from '@inertiajs/react';
 import { FormEventHandler, useRef } from 'react';
-import { motion } from 'framer-motion';
 
 export default function UpdatePasswordForm({
     className = '',
@@ -29,19 +28,8 @@ export default function UpdatePasswordForm({
         password_confirmation: '',
     });
 
-    const passwordRules = {
-        length: data.password.length >= 8,
-        uppercase: /[A-Z]/.test(data.password),
-        lowercase: /[a-z]/.test(data.password),
-        special: /[!@#$%^&*(),.?":{}|<>]/.test(data.password),
-    };
-
-    const isPasswordValid = data.password.length > 0 ? Object.values(passwordRules).every(Boolean) : true;
-
     const updatePassword: FormEventHandler = (e) => {
         e.preventDefault();
-
-        if (data.password && !isPasswordValid) return;
 
         put(route('password.update'), {
             preserveScroll: true,
@@ -63,116 +51,84 @@ export default function UpdatePasswordForm({
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    Update Password
+                <h2 className="text-2xl font-bold text-gray-100 mb-2">
+                    Alterar Senha
                 </h2>
-
-                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    Ensure your account is using a long, random password to stay
-                    secure.
+                <p className="text-sm text-gray-400">
+                    Sua conta está segura com a FlameGás. Crie uma senha longa e aleatória para se manter protegido.
                 </p>
             </header>
-
-            <form onSubmit={updatePassword} className="mt-6 space-y-6">
+            <form onSubmit={updatePassword} className="mt-8 space-y-6">
                 <div>
                     <InputLabel
                         htmlFor="current_password"
-                        value="Current Password"
+                        value="Senha Atual"
+                        className="text-gray-300"
                     />
-
                     <TextInput
                         id="current_password"
                         ref={currentPasswordInput}
                         value={data.current_password}
-                        onChange={(e) =>
-                            setData('current_password', e.target.value)
-                        }
+                        onChange={(e) => setData('current_password', e.target.value)}
                         type="password"
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
                         autoComplete="current-password"
                     />
-
                     <InputError
                         message={errors.current_password}
                         className="mt-2"
                     />
                 </div>
-
                 <div>
-                    <InputLabel htmlFor="password" value="New Password" />
-
+                    <InputLabel htmlFor="password" value="Nova Senha" className="text-gray-300" />
                     <TextInput
                         id="password"
                         ref={passwordInput}
                         value={data.password}
                         onChange={(e) => setData('password', e.target.value)}
                         type="password"
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
                         autoComplete="new-password"
                     />
-
                     <InputError message={errors.password} className="mt-2" />
-                    {data.password.length > 0 && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            className="mt-3 space-y-1.5 overflow-hidden"
-                        >
-                            <div className={`flex items-center gap-2 text-xs font-medium transition-colors ${passwordRules.length ? 'text-green-500 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                                <i className={`fa-solid ${passwordRules.length ? 'fa-check' : 'fa-circle-dot'} text-[10px]`}></i>
-                                Mínimo 8 caracteres
-                            </div>
-                            <div className={`flex items-center gap-2 text-xs font-medium transition-colors ${passwordRules.uppercase ? 'text-green-500 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                                <i className={`fa-solid ${passwordRules.uppercase ? 'fa-check' : 'fa-circle-dot'} text-[10px]`}></i>
-                                Letra maiúscula
-                            </div>
-                            <div className={`flex items-center gap-2 text-xs font-medium transition-colors ${passwordRules.lowercase ? 'text-green-500 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                                <i className={`fa-solid ${passwordRules.lowercase ? 'fa-check' : 'fa-circle-dot'} text-[10px]`}></i>
-                                Letra minúscula
-                            </div>
-                            <div className={`flex items-center gap-2 text-xs font-medium transition-colors ${passwordRules.special ? 'text-green-500 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                                <i className={`fa-solid ${passwordRules.special ? 'fa-check' : 'fa-circle-dot'} text-[10px]`}></i>
-                                Caractere especial (!@#$...)
-                            </div>
-                        </motion.div>
-                    )}
                 </div>
-
                 <div>
                     <InputLabel
                         htmlFor="password_confirmation"
-                        value="Confirm Password"
+                        value="Confirmar Nova Senha"
+                        className="text-gray-300"
                     />
-
                     <TextInput
                         id="password_confirmation"
                         value={data.password_confirmation}
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
+                        onChange={(e) => setData('password_confirmation', e.target.value)}
                         type="password"
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full bg-gray-900/50 border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-orange-500 rounded-xl"
                         autoComplete="new-password"
                     />
-
                     <InputError
                         message={errors.password_confirmation}
                         className="mt-2"
                     />
                 </div>
-
-                <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing || (data.password.length > 0 && !isPasswordValid)}>Save</PrimaryButton>
-
+                <div className="flex items-center gap-4 pt-6 border-t border-gray-800">
+                    <PrimaryButton disabled={processing} className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-8 py-3 rounded-xl shadow-lg shadow-orange-500/20 border-none transition-all">
+                        Salvar Nova Senha
+                    </PrimaryButton>
                     <Transition
                         show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
+                        enter="transition ease-in-out duration-300"
+                        enterFrom="opacity-0 translate-y-2"
+                        enterTo="opacity-100 translate-y-0"
+                        leave="transition ease-in-out duration-300"
+                        leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Saved.
+                        <p className="text-sm font-medium text-green-400 flex items-center gap-2">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Senha alterada!
                         </p>
                     </Transition>
                 </div>
