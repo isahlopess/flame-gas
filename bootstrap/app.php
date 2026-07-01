@@ -23,7 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(function (\Illuminate\Http\Request $request, \Throwable $e) {
-            return $request->expectsJson() || $request->is('api/*') || $request->ajax();
+            if ($request->header('X-Inertia')) {
+                return false;
+            }
+            return $request->expectsJson() || $request->is('api/*');
         });
 
         $exceptions->report(function (\Throwable $e) {
