@@ -77,4 +77,14 @@ class User extends Authenticatable
             default => '/',
         };
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'user_id');
+    }
+
+    public function driverOrders()
+    {
+        return $this->hasMany(Order::class, 'driver_id');
+    }
 }

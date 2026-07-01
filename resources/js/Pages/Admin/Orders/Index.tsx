@@ -1,12 +1,27 @@
 import AdminLayout from '@/Layouts/AdminLayout';
 
-export default function Orders() {
-    const orders = [
-        { id: '#5091', customer: 'Maria Silva', items: '1x P13', total: 'R$ 115,00', driver: 'Marcos Almeida', date: 'Hoje, 14:30', status: 'Concluído', color: 'text-emerald-500 bg-emerald-500/10' },
-        { id: '#5092', customer: 'João Souza', items: '2x P13', total: 'R$ 230,00', driver: 'Ricardo Santos', date: 'Hoje, 15:00', status: 'Em Rota', color: 'text-amber-500 bg-amber-500/10' },
-        { id: '#5093', customer: 'Padaria Central', items: '1x P45', total: 'R$ 410,00', driver: 'Pendente', date: 'Hoje, 15:15', status: 'Pendente', color: 'text-slate-500 bg-slate-500/10' },
-        { id: '#5094', customer: 'Carlos Mendes', items: '1x P13', total: 'R$ 115,00', driver: 'Felipe Costa', date: 'Ontem, 18:45', status: 'Cancelado', color: 'text-red-500 bg-red-500/10' },
-    ];
+export default function Orders({ orders }: { orders: any[] }) {
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    };
+
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'completed': return 'text-emerald-500 bg-emerald-500/10';
+            case 'en_route': return 'text-amber-500 bg-amber-500/10';
+            case 'cancelled': return 'text-red-500 bg-red-500/10';
+            default: return 'text-slate-500 bg-slate-500/10';
+        }
+    };
+
+    const getStatusLabel = (status: string) => {
+        switch (status) {
+            case 'completed': return 'Concluído';
+            case 'en_route': return 'Em Rota';
+            case 'cancelled': return 'Cancelado';
+            default: return 'Pendente';
+        }
+    };
 
     return (
         <AdminLayout title="Gestão de Pedidos">
@@ -40,15 +55,15 @@ export default function Orders() {
                         <tbody className="bg-white dark:bg-navy-900 divide-y divide-slate-100 dark:divide-white/5">
                             {orders.map((item) => (
                                 <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 dark:text-white">{item.id}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{item.customer}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{item.date}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{item.items}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 dark:text-white">{item.total}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{item.driver}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 dark:text-white">#{item.id}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{item.user?.name || item.address}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{new Date(item.created_at).toLocaleString('pt-BR')}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{item.items?.length || 0} itens</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 dark:text-white">{formatCurrency(item.total)}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{item.driver?.name || 'Pendente'}</td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${item.color}`}>
-                                            {item.status}
+                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${getStatusColor(item.status)}`}>
+                                            {getStatusLabel(item.status)}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

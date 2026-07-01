@@ -5,6 +5,7 @@ import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
+import { motion } from 'framer-motion';
 
 export default function ResetPassword({
     token,
@@ -20,8 +21,19 @@ export default function ResetPassword({
         password_confirmation: '',
     });
 
+    const passwordRules = {
+        length: data.password.length >= 8,
+        uppercase: /[A-Z]/.test(data.password),
+        lowercase: /[a-z]/.test(data.password),
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(data.password),
+    };
+
+    const isPasswordValid = data.password.length > 0 ? Object.values(passwordRules).every(Boolean) : true;
+
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+
+        if (data.password && !isPasswordValid) return;
 
         post(route('password.store'), {
             onFinish: () => reset('password', 'password_confirmation'),
@@ -64,6 +76,30 @@ export default function ResetPassword({
                     />
 
                     <InputError message={errors.password} className="mt-2" />
+                    {data.password.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            className="mt-3 space-y-1.5 overflow-hidden"
+                        >
+                            <div className={`flex items-center gap-2 text-xs font-medium transition-colors ${passwordRules.length ? 'text-green-500' : 'text-slate-500'}`}>
+                                <i className={`fa-solid ${passwordRules.length ? 'fa-check' : 'fa-circle-dot'} text-[10px]`}></i>
+                                Mínimo 8 caracteres
+                            </div>
+                            <div className={`flex items-center gap-2 text-xs font-medium transition-colors ${passwordRules.uppercase ? 'text-green-500' : 'text-slate-500'}`}>
+                                <i className={`fa-solid ${passwordRules.uppercase ? 'fa-check' : 'fa-circle-dot'} text-[10px]`}></i>
+                                Letra maiúscula
+                            </div>
+                            <div className={`flex items-center gap-2 text-xs font-medium transition-colors ${passwordRules.lowercase ? 'text-green-500' : 'text-slate-500'}`}>
+                                <i className={`fa-solid ${passwordRules.lowercase ? 'fa-check' : 'fa-circle-dot'} text-[10px]`}></i>
+                                Letra minúscula
+                            </div>
+                            <div className={`flex items-center gap-2 text-xs font-medium transition-colors ${passwordRules.special ? 'text-green-500' : 'text-slate-500'}`}>
+                                <i className={`fa-solid ${passwordRules.special ? 'fa-check' : 'fa-circle-dot'} text-[10px]`}></i>
+                                Caractere especial (!@#$...)
+                            </div>
+                        </motion.div>
+                    )}
                 </div>
 
                 <div className="mt-4">
@@ -90,7 +126,7 @@ export default function ResetPassword({
                 </div>
 
                 <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
+                    <PrimaryButton className="ms-4" disabled={processing || (data.password.length > 0 && !isPasswordValid)}>
                         Reset Password
                     </PrimaryButton>
                 </div>

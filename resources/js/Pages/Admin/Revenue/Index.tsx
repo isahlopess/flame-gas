@@ -1,37 +1,25 @@
 import AdminLayout from '@/Layouts/AdminLayout';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 
-export default function Revenue() {
-    const revenueData = [
-        { name: 'Jan', receita: 38000, despesa: 24000 },
-        { name: 'Fev', receita: 42000, despesa: 26000 },
-        { name: 'Mar', receita: 39000, despesa: 25000 },
-        { name: 'Abr', receita: 45000, despesa: 28000 },
-        { name: 'Mai', receita: 48000, despesa: 29000 },
-        { name: 'Jun', receita: 42500, despesa: 27000 },
-    ];
-
-    const paymentMethods = [
-        { name: 'Pix', value: 45 },
-        { name: 'Cartão de Crédito', value: 35 },
-        { name: 'Dinheiro', value: 15 },
-        { name: 'Cartão de Débito', value: 5 },
-    ];
+export default function Revenue({ revenueDetails, totalRevenue, paymentMethods, revenueChartData }: { revenueDetails: any[], totalRevenue: number, paymentMethods: any[], revenueChartData: any[] }) {
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    };
 
     return (
         <AdminLayout title="Faturamento e Financeiro">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white dark:bg-navy-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-white/5">
                     <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Receita Bruta (Ano)</p>
-                    <p className="text-2xl font-bold text-slate-900 dark:text-white mb-4">R$ 254.500,00</p>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{formatCurrency(totalRevenue || 0)}</p>
                     <div className="w-full bg-slate-100 dark:bg-navy-800 rounded-full h-2">
-                        <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '70%' }}></div>
+                        <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '10%' }}></div>
                     </div>
-                    <p className="text-xs text-slate-500 mt-2">Meta: R$ 350.000,00</p>
+                    <p className="text-xs text-slate-500 mt-2">Dados em tempo real</p>
                 </div>
                 <div className="bg-white dark:bg-navy-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-white/5">
                     <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Lucro Líquido Estimado</p>
-                    <p className="text-2xl font-bold text-emerald-500 mb-4">R$ 95.500,00</p>
+                    <p className="text-2xl font-bold text-emerald-500 mb-4">{formatCurrency((totalRevenue || 0) * 0.375)}</p>
                     <div className="w-full bg-slate-100 dark:bg-navy-800 rounded-full h-2">
                         <div className="bg-blue-500 h-2 rounded-full" style={{ width: '37%' }}></div>
                     </div>
@@ -57,7 +45,7 @@ export default function Revenue() {
                     </div>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                            <AreaChart data={revenueChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="colorRec" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
@@ -84,7 +72,7 @@ export default function Revenue() {
                 <div className="bg-white dark:bg-navy-900 rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 p-6 flex flex-col">
                     <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Meios de Pagamento</h2>
                     <div className="flex-1 space-y-5 mt-4">
-                        {paymentMethods.map(method => (
+                        {paymentMethods && paymentMethods.length > 0 ? paymentMethods.map(method => (
                             <div key={method.name}>
                                 <div className="flex justify-between text-sm mb-1">
                                     <span className="font-medium text-slate-700 dark:text-slate-300">{method.name}</span>
@@ -101,7 +89,9 @@ export default function Revenue() {
                                     ></div>
                                 </div>
                             </div>
-                        ))}
+                        )) : (
+                            <div className="text-slate-500 text-sm">Nenhum dado disponível.</div>
+                        )}
                     </div>
                 </div>
             </div>

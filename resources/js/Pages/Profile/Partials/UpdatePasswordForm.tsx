@@ -5,6 +5,7 @@ import TextInput from '@/Components/TextInput';
 import { Transition } from '@headlessui/react';
 import { useForm } from '@inertiajs/react';
 import { FormEventHandler, useRef } from 'react';
+import { motion } from 'framer-motion';
 
 export default function UpdatePasswordForm({
     className = '',
@@ -28,8 +29,19 @@ export default function UpdatePasswordForm({
         password_confirmation: '',
     });
 
+    const passwordRules = {
+        length: data.password.length >= 8,
+        uppercase: /[A-Z]/.test(data.password),
+        lowercase: /[a-z]/.test(data.password),
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(data.password),
+    };
+
+    const isPasswordValid = data.password.length > 0 ? Object.values(passwordRules).every(Boolean) : true;
+
     const updatePassword: FormEventHandler = (e) => {
         e.preventDefault();
+
+        if (data.password && !isPasswordValid) return;
 
         put(route('password.update'), {
             preserveScroll: true,
@@ -100,6 +112,30 @@ export default function UpdatePasswordForm({
                     />
 
                     <InputError message={errors.password} className="mt-2" />
+                    {data.password.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            className="mt-3 space-y-1.5 overflow-hidden"
+                        >
+                            <div className={`flex items-center gap-2 text-xs font-medium transition-colors ${passwordRules.length ? 'text-green-500 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                                <i className={`fa-solid ${passwordRules.length ? 'fa-check' : 'fa-circle-dot'} text-[10px]`}></i>
+                                Mínimo 8 caracteres
+                            </div>
+                            <div className={`flex items-center gap-2 text-xs font-medium transition-colors ${passwordRules.uppercase ? 'text-green-500 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                                <i className={`fa-solid ${passwordRules.uppercase ? 'fa-check' : 'fa-circle-dot'} text-[10px]`}></i>
+                                Letra maiúscula
+                            </div>
+                            <div className={`flex items-center gap-2 text-xs font-medium transition-colors ${passwordRules.lowercase ? 'text-green-500 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                                <i className={`fa-solid ${passwordRules.lowercase ? 'fa-check' : 'fa-circle-dot'} text-[10px]`}></i>
+                                Letra minúscula
+                            </div>
+                            <div className={`flex items-center gap-2 text-xs font-medium transition-colors ${passwordRules.special ? 'text-green-500 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                                <i className={`fa-solid ${passwordRules.special ? 'fa-check' : 'fa-circle-dot'} text-[10px]`}></i>
+                                Caractere especial (!@#$...)
+                            </div>
+                        </motion.div>
+                    )}
                 </div>
 
                 <div>
@@ -126,7 +162,7 @@ export default function UpdatePasswordForm({
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                    <PrimaryButton disabled={processing || (data.password.length > 0 && !isPasswordValid)}>Save</PrimaryButton>
 
                     <Transition
                         show={recentlySuccessful}

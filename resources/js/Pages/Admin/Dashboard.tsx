@@ -2,29 +2,16 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import { motion } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-const revenueData = [
-    { name: '01 Jun', value: 1200 },
-    { name: '05 Jun', value: 2100 },
-    { name: '10 Jun', value: 1800 },
-    { name: '15 Jun', value: 3400 },
-    { name: '20 Jun', value: 2800 },
-    { name: '25 Jun', value: 4200 },
-    { name: '30 Jun', value: 3800 },
-];
+export default function Dashboard({ stats, recentOrders, statusData, topDrivers, revenueData }: { stats: any, recentOrders: any[], statusData: any[], topDrivers: any[], revenueData: any[] }) {
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    };
 
-const statusData = [
-    { name: 'Concluídos', value: 400, color: '#10b981' },
-    { name: 'Em Rota', value: 85, color: '#f97316' },
-    { name: 'Pendentes', value: 45, color: '#eab308' },
-    { name: 'Cancelados', value: 20, color: '#ef4444' },
-];
-
-export default function Dashboard() {
     const kpis = [
-        { label: 'Faturamento Mensal', value: 'R$ 42.500,00', trend: '+12%', icon: 'fa-solid fa-money-bill-trend-up', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-        { label: 'Pedidos Realizados', value: '1.248', trend: '+5%', icon: 'fa-solid fa-cart-shopping', color: 'text-flame-500', bg: 'bg-flame-500/10' },
-        { label: 'Clientes Ativos', value: '342', trend: '+18%', icon: 'fa-solid fa-users', color: 'text-blue-500', bg: 'bg-blue-500/10' },
-        { label: 'Entregas Hoje', value: '84', trend: '-2%', icon: 'fa-solid fa-truck-fast', color: 'text-amber-500', bg: 'bg-amber-500/10' },
+        { label: 'Faturamento Total', value: formatCurrency(stats?.revenue || 0), trend: '+0%', icon: 'fa-solid fa-money-bill-trend-up', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+        { label: 'Pedidos Realizados', value: stats?.ordersCount || 0, trend: '+0%', icon: 'fa-solid fa-cart-shopping', color: 'text-flame-500', bg: 'bg-flame-500/10' },
+        { label: 'Clientes Ativos', value: stats?.customersCount || 0, trend: '+0%', icon: 'fa-solid fa-users', color: 'text-blue-500', bg: 'bg-blue-500/10' },
+        { label: 'Entregas Hoje', value: stats?.deliveriesToday || 0, trend: '+0%', icon: 'fa-solid fa-truck-fast', color: 'text-amber-500', bg: 'bg-amber-500/10' },
     ];
 
     return (
@@ -111,7 +98,7 @@ export default function Dashboard() {
                             </PieChart>
                         </ResponsiveContainer>
                         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span className="text-3xl font-bold text-slate-900 dark:text-white">550</span>
+                            <span className="text-3xl font-bold text-slate-900 dark:text-white">{statusData.reduce((acc, curr) => acc + curr.value, 0)}</span>
                             <span className="text-xs text-slate-500 uppercase tracking-widest font-bold mt-1">Total</span>
                         </div>
                     </div>
@@ -146,19 +133,28 @@ export default function Dashboard() {
                                 </tr>
                             </thead>
                             <tbody className="text-sm divide-y divide-slate-100 dark:divide-white/5">
-                                {[1, 2, 3, 4].map(i => (
-                                    <tr key={i} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                                        <td className="p-4 pl-6 font-bold text-slate-900 dark:text-white">#509{i}</td>
-                                        <td className="p-4 font-medium text-slate-600 dark:text-slate-300">Cliente Exemplo {i}</td>
-                                        <td className="p-4 font-bold text-slate-900 dark:text-white">R$ 115,00</td>
-                                        <td className="p-4 text-slate-500">João Silva</td>
+                                {recentOrders && recentOrders.length > 0 ? recentOrders.map((order: any) => (
+                                    <tr key={order.id} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                                        <td className="p-4 pl-6 font-bold text-slate-900 dark:text-white">#{order.id}</td>
+                                        <td className="p-4 font-medium text-slate-600 dark:text-slate-300">{order.user?.name || order.address}</td>
+                                        <td className="p-4 font-bold text-slate-900 dark:text-white">{formatCurrency(order.total)}</td>
+                                        <td className="p-4 text-slate-500">{order.driver?.name || 'Pendente'}</td>
                                         <td className="p-4 pr-6">
-                                            <span className="bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 text-xs font-bold px-2 py-1 rounded-full">
-                                                Concluído
+                                            <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+                                                order.status === 'completed' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400' :
+                                                order.status === 'en_route' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' :
+                                                order.status === 'cancelled' ? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400' :
+                                                'bg-slate-50 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400'
+                                            }`}>
+                                                {order.status === 'completed' ? 'Concluído' :
+                                                 order.status === 'en_route' ? 'Em Rota' :
+                                                 order.status === 'cancelled' ? 'Cancelado' : 'Pendente'}
                                             </span>
                                         </td>
                                     </tr>
-                                ))}
+                                )) : (
+                                    <tr><td colSpan={5} className="p-4 text-center text-slate-500">Nenhum pedido recente.</td></tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -168,11 +164,7 @@ export default function Dashboard() {
                         <h2 className="text-lg font-bold text-slate-900 dark:text-white">Top Entregadores (Mês)</h2>
                     </div>
                     <div className="p-0">
-                        {[
-                            { name: 'Marcos Almeida', deliveries: 342, rating: 4.9 },
-                            { name: 'Ricardo Santos', deliveries: 289, rating: 4.8 },
-                            { name: 'Felipe Costa', deliveries: 215, rating: 4.9 },
-                        ].map((driver, i) => (
+                        {topDrivers && topDrivers.length > 0 ? topDrivers.map((driver, i) => (
                             <div key={i} className="p-4 border-b border-slate-100 dark:border-white/5 last:border-0 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 dark:from-navy-800 dark:to-navy-700 flex items-center justify-center font-bold text-slate-700 dark:text-slate-300">
@@ -190,7 +182,9 @@ export default function Dashboard() {
                                     <p className="text-xs text-slate-500 uppercase">Entregas</p>
                                 </div>
                             </div>
-                        ))}
+                        )) : (
+                            <div className="p-6 text-center text-slate-500">Nenhum entregador encontrado.</div>
+                        )}
                     </div>
                 </div>
             </div>

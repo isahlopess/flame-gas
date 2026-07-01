@@ -1,12 +1,6 @@
 import AdminLayout from '@/Layouts/AdminLayout';
 
-export default function Drivers() {
-    const drivers = [
-        { id: 'MOT-001', name: 'Marcos Almeida', phone: '(11) 91111-2222', vehicle: 'Kombi Branca - ABC-1234', deliveries: 342, rating: 4.9, status: 'Online' },
-        { id: 'MOT-002', name: 'Ricardo Santos', phone: '(11) 92222-3333', vehicle: 'Moto Honda CG - DEF-5678', deliveries: 289, rating: 4.8, status: 'Em Rota' },
-        { id: 'MOT-003', name: 'Felipe Costa', phone: '(11) 93333-4444', vehicle: 'Fiorino Branca - GHI-9012', deliveries: 215, rating: 4.9, status: 'Offline' },
-    ];
-
+export default function Drivers({ drivers }: { drivers: any[] }) {
     return (
         <AdminLayout title="Gestão de Entregadores">
             <div className="bg-white dark:bg-navy-900 rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 overflow-hidden">
@@ -36,7 +30,7 @@ export default function Drivers() {
                             </tr>
                         </thead>
                         <tbody className="bg-white dark:bg-navy-900 divide-y divide-slate-100 dark:divide-white/5">
-                            {drivers.map((item) => (
+                            {drivers && drivers.length > 0 ? drivers.map((item) => (
                                 <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center gap-3">
@@ -45,24 +39,20 @@ export default function Drivers() {
                                             </div>
                                             <div>
                                                 <div className="text-sm font-bold text-slate-900 dark:text-white">{item.name}</div>
-                                                <div className="text-xs text-slate-500">{item.phone}</div>
+                                                <div className="text-xs text-slate-500">{item.phone || 'Sem telefone'}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{item.vehicle}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{item.deliveries}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">Veículo Padrão</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{item.deliveries || 0}</td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center gap-1 text-sm font-bold text-slate-900 dark:text-white">
-                                            <i className="fa-solid fa-star text-amber-500 text-xs"></i> {item.rating}
+                                            <i className="fa-solid fa-star text-amber-500 text-xs"></i> 5.0
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${
-                                            item.status === 'Online' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' :
-                                            item.status === 'Em Rota' ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' :
-                                            'bg-slate-100 text-slate-700 dark:bg-slate-500/10 dark:text-slate-400'
-                                        }`}>
-                                            {item.status}
+                                        <span className="bg-slate-100 text-slate-700 dark:bg-slate-500/10 dark:text-slate-400 px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full">
+                                            Offline
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -70,7 +60,9 @@ export default function Drivers() {
                                         <button className="text-slate-400 hover:text-red-500"><i className="fa-solid fa-trash"></i></button>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr><td colSpan={6} className="p-4 text-center text-slate-500">Nenhum entregador encontrado.</td></tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

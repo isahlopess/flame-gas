@@ -1,12 +1,16 @@
 import HubLayout from '@/Layouts/HubLayout';
 import { motion } from 'framer-motion';
 
-export default function Dashboard() {
+export default function Dashboard({ orders, queue }: { orders: any[], queue: any[] }) {
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    };
+
     const stats = [
-        { label: 'Entregas Hoje', value: '12', icon: 'fa-solid fa-box-open', color: 'text-blue-500', bg: 'bg-blue-500/10' },
-        { label: 'Ganhos Hoje', value: 'R$ 84,00', icon: 'fa-solid fa-money-bill-wave', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-        { label: 'Avaliação', value: '4.9', icon: 'fa-solid fa-star', color: 'text-amber-500', bg: 'bg-amber-500/10' },
-        { label: 'Em Rota', value: '1', icon: 'fa-solid fa-truck-fast', color: 'text-flame-500', bg: 'bg-flame-500/10' },
+        { label: 'Entregas Hoje', value: orders?.length || 0, icon: 'fa-solid fa-box-open', color: 'text-blue-500', bg: 'bg-blue-500/10' },
+        { label: 'Ganhos Hoje', value: formatCurrency(orders?.reduce((acc: number, order: any) => acc + Number(order.total), 0) || 0), icon: 'fa-solid fa-money-bill-wave', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+        { label: 'Avaliação', value: '5.0', icon: 'fa-solid fa-star', color: 'text-amber-500', bg: 'bg-amber-500/10' },
+        { label: 'Em Rota', value: orders?.filter((o: any) => o.status === 'en_route').length || 0, icon: 'fa-solid fa-truck-fast', color: 'text-flame-500', bg: 'bg-flame-500/10' },
     ];
 
     return (
@@ -63,23 +67,23 @@ export default function Dashboard() {
                     <div className="bg-white dark:bg-navy-900 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 overflow-hidden">
                         <div className="px-6 py-5 border-b border-slate-100 dark:border-white/5 flex justify-between items-center">
                             <h2 className="text-lg font-bold text-slate-900 dark:text-white">Na Fila Agora</h2>
-                            <span className="bg-flame-500/10 text-flame-500 text-xs font-bold px-2 py-1 rounded">2 Pendentes</span>
+                            <span className="bg-flame-500/10 text-flame-500 text-xs font-bold px-2 py-1 rounded">{queue?.length || 0} Pendentes</span>
                         </div>
-                        <div className="p-0">
-                            {[1, 2].map((i) => (
-                                <div key={i} className="p-4 border-b border-slate-100 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
+                        <div className="p-0 max-h-96 overflow-y-auto">
+                            {queue && queue.length > 0 ? queue.map((order) => (
+                                <div key={order.id} className="p-4 border-b border-slate-100 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
                                             <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-navy-800 flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 text-xs">
-                                                C{i}
+                                                {(order.user?.name || order.address).charAt(0)}
                                             </div>
-                                            <span className="font-bold text-slate-900 dark:text-white text-sm">Cliente {i}</span>
+                                            <span className="font-bold text-slate-900 dark:text-white text-sm">{order.user?.name || order.address}</span>
                                         </div>
-                                        <span className="text-xs font-medium text-slate-500">Há {i * 5} min</span>
+                                        <span className="text-xs font-medium text-slate-500">{new Date(order.created_at).toLocaleTimeString('pt-BR')}</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-3">
                                         <i className="fa-solid fa-location-dot text-slate-400"></i>
-                                        <span className="truncate">Rua Exemplo, {100 * i} - Bairro</span>
+                                        <span className="truncate">{order.address}, {order.neighborhood}</span>
                                     </div>
                                     <div className="flex gap-2">
                                         <button className="flex-1 bg-flame-500 hover:bg-flame-600 text-white text-sm font-bold py-2 rounded-lg transition-colors">
@@ -87,7 +91,9 @@ export default function Dashboard() {
                                         </button>
                                     </div>
                                 </div>
-                            ))}
+                            )) : (
+                                <div className="p-6 text-center text-slate-500">Nenhum pedido na fila.</div>
+                            )}
                         </div>
                     </div>
                 </div>

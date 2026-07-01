@@ -1,15 +1,9 @@
 import HubLayout from '@/Layouts/HubLayout';
 
-export default function History() {
-    const historyItems = [
-        { id: '#4092', customer: 'Lanchonete Sabor', date: 'Hoje, 14:30', items: '2x P13', total: 'R$ 230,00', status: 'Concluído', color: 'text-emerald-500 bg-emerald-500/10' },
-        { id: '#4091', customer: 'Carlos Mendes', date: 'Hoje, 11:15', items: '1x P13, 1x Água 20L', total: 'R$ 130,00', status: 'Concluído', color: 'text-emerald-500 bg-emerald-500/10' },
-        { id: '#4090', customer: 'Fernanda Lima', date: 'Hoje, 09:45', items: '1x P13', total: 'R$ 115,00', status: 'Concluído', color: 'text-emerald-500 bg-emerald-500/10' },
-        { id: '#4089', customer: 'Restaurante Central', date: 'Ontem, 19:20', items: '3x P45', total: 'R$ 1.230,00', status: 'Cancelado', color: 'text-red-500 bg-red-500/10' },
-        { id: '#4088', customer: 'Ana Clara', date: 'Ontem, 16:10', items: '1x P13', total: 'R$ 115,00', status: 'Concluído', color: 'text-emerald-500 bg-emerald-500/10' },
-        { id: '#4087', customer: 'Roberto Silva', date: 'Ontem, 14:05', items: '2x Água 20L', total: 'R$ 30,00', status: 'Concluído', color: 'text-emerald-500 bg-emerald-500/10' },
-        { id: '#4086', customer: 'Condomínio Vista Bela', date: 'Ontem, 10:30', items: '5x P13', total: 'R$ 575,00', status: 'Concluído', color: 'text-emerald-500 bg-emerald-500/10' },
-    ];
+export default function History({ history }: { history: any[] }) {
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    };
 
     return (
         <HubLayout title="Histórico de Entregas">
@@ -59,33 +53,35 @@ export default function History() {
                             </tr>
                         </thead>
                         <tbody className="bg-white dark:bg-navy-900 divide-y divide-slate-100 dark:divide-white/5">
-                            {historyItems.map((item) => (
+                            {history.map((item) => (
                                 <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 dark:text-white">
-                                        {item.id}
+                                        #{item.id}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
                                             <div className="flex-shrink-0 h-8 w-8 rounded-full bg-slate-100 dark:bg-navy-800 flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 text-xs">
-                                                {item.customer.charAt(0)}
+                                                {(item.user?.name || item.address).charAt(0)}
                                             </div>
                                             <div className="ml-3">
-                                                <div className="text-sm font-medium text-slate-900 dark:text-white">{item.customer}</div>
+                                                <div className="text-sm font-medium text-slate-900 dark:text-white">{item.user?.name || item.address}</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                                        {item.date}
+                                        {new Date(item.created_at).toLocaleString('pt-BR')}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                                        {item.items}
+                                        {item.items?.length || 0} itens
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 dark:text-white">
-                                        {item.total}
+                                        {formatCurrency(item.total)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${item.color}`}>
-                                            {item.status}
+                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${
+                                            item.status === 'completed' ? 'text-emerald-500 bg-emerald-500/10' : 'text-red-500 bg-red-500/10'
+                                        }`}>
+                                            {item.status === 'completed' ? 'Concluído' : 'Cancelado'}
                                         </span>
                                     </td>
                                 </tr>

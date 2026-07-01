@@ -40,7 +40,7 @@ export default function CheckoutModal() {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
     };
 
-    const submitOrder: FormEventHandler = (e) => {
+    const submitOrder: FormEventHandler = async (e) => {
         e.preventDefault();
 
         if (!data.name || !data.phone || !data.address || !data.neighborhood) {
@@ -48,38 +48,54 @@ export default function CheckoutModal() {
             return;
         }
 
-        const phoneTarget = '5567999999999';
+        try {
+            await window.axios.post('/api/orders', {
+                ...data,
+                items: items.map(item => ({
+                    id: item.id,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                total: totalPrice,
+                city: 'Campo Grande',
+            });
 
-        let message = `*Novo Pedido — FlameGás*\n\n`;
-        message += `*Cliente:* ${data.name}\n`;
-        message += `*Telefone:* ${data.phone}\n`;
-        message += `*Endereço:* ${data.address}, Bairro: ${data.neighborhood}\n`;
-        if (data.complement) {
-            message += `*Complemento:* ${data.complement}\n`;
+            const phoneTarget = '5567999999999';
+
+            let message = `*Novo Pedido — FlameGás*\n\n`;
+            message += `*Cliente:* ${data.name}\n`;
+            message += `*Telefone:* ${data.phone}\n`;
+            message += `*Endereço:* ${data.address}, Bairro: ${data.neighborhood}\n`;
+            if (data.complement) {
+                message += `*Complemento:* ${data.complement}\n`;
+            }
+
+            message += `\n*Itens do Pedido:*\n`;
+            items.forEach(item => {
+                message += `- ${item.quantity}x ${item.name} (${formatCurrency(item.price * item.quantity)})\n`;
+            });
+
+            message += `\n*Total:* ${formatCurrency(totalPrice)}\n`;
+
+            const paymentLabel = data.payment_method === 'pix' ? 'Pix' : (data.payment_method === 'card' ? 'Cartão' : 'Dinheiro');
+            message += `*Pagamento:* ${paymentLabel}\n`;
+
+            if (data.notes) {
+                message += `\n*Observações:* ${data.notes}\n`;
+            }
+
+            message += `\nPedido via Site 🌐`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${phoneTarget}?text=${encodedMessage}`;
+
+            clearCart();
+            setCheckoutOpen(false);
+            window.open(whatsappUrl, '_blank');
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao processar seu pedido. Tente novamente.');
         }
-
-        message += `\n*Itens do Pedido:*\n`;
-        items.forEach(item => {
-            message += `- ${item.quantity}x ${item.name} (${formatCurrency(item.price * item.quantity)})\n`;
-        });
-
-        message += `\n*Total:* ${formatCurrency(totalPrice)}\n`;
-
-        const paymentLabel = data.payment_method === 'pix' ? 'Pix' : (data.payment_method === 'card' ? 'Cartão' : 'Dinheiro');
-        message += `*Pagamento:* ${paymentLabel}\n`;
-
-        if (data.notes) {
-            message += `\n*Observações:* ${data.notes}\n`;
-        }
-
-        message += `\nPedido via Site 🌐`;
-
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappUrl = `https://wa.me/${phoneTarget}?text=${encodedMessage}`;
-
-        clearCart();
-        setCheckoutOpen(false);
-        window.open(whatsappUrl, '_blank');
     };
 
     if (!isCheckoutOpen) return null;

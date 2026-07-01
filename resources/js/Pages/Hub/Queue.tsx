@@ -1,18 +1,16 @@
 import HubLayout from '@/Layouts/HubLayout';
 import { motion } from 'framer-motion';
 
-export default function Queue() {
-    const queueItems = [
-        { id: 1, customer: 'Maria Silva', address: 'Rua das Flores, 123', neighborhood: 'Centro', items: '1x P13', total: 'R$ 115,00', time: '5 min', distance: '1.2 km' },
-        { id: 2, customer: 'João Souza', address: 'Av Principal, 456', neighborhood: 'Jardim', items: '2x P13', total: 'R$ 230,00', time: '12 min', distance: '3.5 km' },
-        { id: 3, customer: 'Padaria Pão Quente', address: 'Rua do Comércio, 78', neighborhood: 'Centro', items: '1x P45', total: 'R$ 410,00', time: '15 min', distance: '2.1 km' },
-    ];
+export default function Queue({ queue }: { queue: any[] }) {
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    };
 
     return (
         <HubLayout title="Fila de Pedidos">
             <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <p className="text-slate-600 dark:text-slate-400">
-                    Você tem <strong className="text-flame-500">{queueItems.length} pedidos</strong> pendentes na sua região.
+                    Você tem <strong className="text-flame-500">{queue.length} pedidos</strong> pendentes na sua região.
                 </p>
                 <div className="flex gap-2">
                     <button className="px-4 py-2 bg-white dark:bg-navy-900 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
@@ -24,7 +22,7 @@ export default function Queue() {
                 </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {queueItems.map((order, i) => (
+                {queue.map((order, i) => (
                     <motion.div
                         key={order.id}
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -36,12 +34,12 @@ export default function Queue() {
                         <div className="flex justify-between items-start mb-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-navy-800 flex items-center justify-center font-bold text-slate-700 dark:text-slate-300">
-                                    {order.customer.charAt(0)}
+                                    {(order.user?.name || order.address).charAt(0)}
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-slate-900 dark:text-white">{order.customer}</h3>
+                                    <h3 className="font-bold text-slate-900 dark:text-white">{order.user?.name || order.address}</h3>
                                     <p className="text-xs text-slate-500 flex items-center gap-1">
-                                        <i className="fa-regular fa-clock"></i> Há {order.time}
+                                        <i className="fa-regular fa-clock"></i> {new Date(order.created_at).toLocaleTimeString('pt-BR')}
                                     </p>
                                 </div>
                             </div>
@@ -67,9 +65,9 @@ export default function Queue() {
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-tight">
-                                        {order.items}
+                                        {order.items?.length || 0} itens
                                     </p>
-                                    <p className="text-xs font-bold text-flame-500">{order.total}</p>
+                                    <p className="text-xs font-bold text-flame-500">{formatCurrency(order.total)}</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
@@ -78,7 +76,7 @@ export default function Queue() {
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-tight">
-                                        {order.distance} de você
+                                        Calculando...
                                     </p>
                                 </div>
                             </div>
