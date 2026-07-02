@@ -32,15 +32,110 @@ Route::post('/api/orders', [OrderController::class, 'store'])->name('api.orders.
 
 Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix('hub')->group(function () {
     Route::get('/', function () {
+        $period = request('period', 'week');
         $user = auth()->user();
+        
         $orders = Order::where('driver_id', $user->id)
                       ->whereIn('status', ['en_route', 'accepted'])
                       ->with('items.product')
                       ->get();
+                      
+        $startDate = now();
+        $groupType = 'day';
+        
+        if ($period === 'today') {
+            $startDate = now()->startOfDay();
+            $groupType = 'hour';
+        } elseif ($period === 'month') {
+            $startDate = now()->subDays(29)->startOfDay();
+        } else {
+            $startDate = now()->subDays(6)->startOfDay();
+        }
+        
+        $completedOrders = Order::where('driver_id', $user->id)
+                             ->where('status', 'completed')
+                             ->where('created_at', '>=', $startDate)
+                             ->with('user')
+                             ->get();
+                             
+        $kpis = [
+            'count' => $completedOrders->count(),
+            'revenue' => (float) $completedOrders->sum('total'),
+            'rating' => 5.0,
+            'en_route' => $orders->count(),
+        ];
+        
+        $periodData = [];
+        if ($groupType === 'hour') {
+            $periods = [
+                ['name' => '07h-09h', 'start' => 7, 'end' => 8],
+                ['name' => '09h-11h', 'start' => 9, 'end' => 10],
+                ['name' => '11h-13h', 'start' => 11, 'end' => 12],
+                ['name' => '13h-15h', 'start' => 13, 'end' => 14],
+                ['name' => '15h-17h', 'start' => 15, 'end' => 16],
+                ['name' => '17h-19h', 'start' => 17, 'end' => 18],
+                ['name' => '19h-21h', 'start' => 19, 'end' => 20],
+            ];
+            foreach ($periods as $p) {
+                $pOrders = $completedOrders->filter(function($o) use ($p) {
+                    $h = $o->created_at->hour;
+                    return $h >= $p['start'] && $h <= $p['end'];
+                });
+                $periodData[] = [
+                    'day' => $p['name'],
+                    'count' => $pOrders->count(),
+                    'revenue' => (float) $pOrders->sum('total'),
+                    'rating' => 5.0
+                ];
+            }
+        } elseif ($period === 'month') {
+            $dayOfWeekStats = array_fill(0, 7, ['count' => 0, 'revenue' => 0, 'days_in_period' => 0]);
+            for ($i = 0; $i < 30; $i++) {
+                $date = now()->subDays(29 - $i);
+                $dayOfWeekStats[$date->dayOfWeek]['days_in_period']++;
+            }
+            
+            foreach ($completedOrders as $order) {
+                $dayOfWeekStats[$order->created_at->dayOfWeek]['count']++;
+                $dayOfWeekStats[$order->created_at->dayOfWeek]['revenue'] += $order->total;
+            }
+            
+            for ($i = 0; $i < 7; $i++) {
+                $date = now()->subDays(6 - $i);
+                $dayIndex = $date->dayOfWeek;
+                $stats = $dayOfWeekStats[$dayIndex];
+                $div = $stats['days_in_period'] ?: 1;
+                
+                $periodData[] = [
+                    'day' => $date->locale('pt_BR')->isoFormat('ddd'),
+                    'count' => round($stats['count'] / $div, 1),
+                    'revenue' => (float) round($stats['revenue'] / $div, 2),
+                    'rating' => 5.0,
+                ];
+            }
+        } else {
+            $days = 7;
+            for ($i = 0; $i < $days; $i++) {
+                $date = now()->subDays($days - 1 - $i);
+                $dayOrders = $completedOrders->where('created_at', '>=', $date->copy()->startOfDay())
+                                          ->where('created_at', '<=', $date->copy()->endOfDay());
+                
+                $periodData[] = [
+                    'day' => $date->locale('pt_BR')->isoFormat('ddd'),
+                    'count' => $dayOrders->count(),
+                    'revenue' => (float) $dayOrders->sum('total'),
+                    'rating' => 5.0,
+                ];
+            }
+        }
 
         return Inertia::render('Hub/Dashboard', [
             'orders' => $orders,
-            'queue' => Order::where('status', 'pending')->with('items.product')->get(),
+            'queue' => Order::where('status', 'pending')->with(['items.product', 'user'])->get(),
+            'weeklyData' => $periodData,
+            'recentHistory' => $completedOrders->sortByDesc('created_at')->take(5)->values(),
+            'kpis' => $kpis,
+            'currentPeriod' => $period,
         ]);
     })->name('hub.dashboard');
 
