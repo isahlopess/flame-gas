@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Truck, CheckCircle2, Clock, MapPin, Package, XCircle, User } from 'lucide-react';
+import { ShoppingBag, Truck, CheckCircle2, Clock, MapPin, Package, XCircle, User, Star } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
 
 interface OrderItem {
@@ -10,7 +10,7 @@ interface OrderItem {
         image: string;
     };
     quantity: number;
-    price: number;
+    unit_price: number;
 }
 
 interface Order {
@@ -19,6 +19,7 @@ interface Order {
     total: number;
     payment_method: string;
     created_at: string;
+    rating?: number;
     items: OrderItem[];
     driver?: {
         name: string;
@@ -32,6 +33,15 @@ interface Order {
 }
 
 export default function UserOrdersList({ orders }: { orders: Order[] }) {
+    const getProductImage = (product: any) => {
+        if (!product) return '/images/residential.png';
+        const name = product.name?.toLowerCase() || '';
+        if (name.includes('comercial') || name.includes('p45')) return '/images/commercial.png';
+        if (name.includes('água') || name.includes('agua') || name.includes('galão')) return '/images/water_gallon.png';
+        if (name.includes('kit') || name.includes('segurança')) return '/images/tech.png';
+        return '/images/residential.png';
+    };
+
     const user = usePage().props.auth.user as any;
     const isEmployee = user.role === 'employee';
 
@@ -110,71 +120,104 @@ export default function UserOrdersList({ orders }: { orders: Order[] }) {
                                     {statusInfo.label}
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                                <div className="lg:col-start-1 lg:row-start-1">
                                     <h4 className="text-sm font-semibold text-gray-400 mb-4 uppercase tracking-wider">Itens do Pedido</h4>
                                     <div className="space-y-3">
                                         {order.items.map((item) => (
                                             <div key={item.id} className="flex items-center gap-4 bg-gray-950/50 p-3 rounded-xl border border-gray-800/50">
-                                                <div className="w-12 h-12 bg-white rounded-lg p-1 flex-shrink-0">
-                                                    <img src={item.product.image} alt={item.product.name} className="w-full h-full object-contain" />
+                                                <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
+                                                    <img src={getProductImage(item.product)} alt={item.product?.name || 'Produto'} className="w-full h-full object-contain drop-shadow-md" />
                                                 </div>
                                                 <div className="flex-1">
                                                     <h5 className="font-medium text-gray-200 text-sm">{item.product.name}</h5>
-                                                    <p className="text-gray-500 text-sm">{item.quantity}x de R$ {Number(item.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                                                    <p className="text-gray-500 text-sm">{item.quantity}x de R$ {Number(item.unit_price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                                                 </div>
                                                 <div className="font-bold text-gray-300 text-sm">
-                                                    R$ {(item.quantity * item.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                                    R$ {(item.quantity * item.unit_price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
-                                <div className="space-y-6">
-                                    <div>
-                                        <h4 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Resumo Financeiro</h4>
-                                        <div className="bg-gray-950/50 p-4 rounded-xl border border-gray-800/50">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <span className="text-gray-400">Pagamento</span>
-                                                <span className="text-gray-200 font-medium capitalize">{order.payment_method || 'PIX'}</span>
+                                
+                                {!isEmployee && order.status === 'completed' && (
+                                    <div className="lg:col-start-1 lg:row-start-2 h-full flex flex-col">
+                                        <h4 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Avaliação do Pedido</h4>
+                                        <div className="bg-gray-950/50 p-4 rounded-xl border border-gray-800/50 flex flex-col items-center justify-center min-h-[104px] flex-1">
+                                            {order.rating ? (
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <div className="flex gap-1 text-flame-400">
+                                                        {Array.from({ length: 5 }).map((_, i) => (
+                                                            <Star key={i} className={`w-5 h-5 ${i < Math.round(order.rating!) ? 'fill-current' : 'text-gray-700'}`} />
+                                                        ))}
+                                                    </div>
+                                                    <span className="text-xs text-gray-400 font-medium">Você avaliou com {order.rating} estrelas</span>
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <span className="text-xs text-gray-400 text-center">Como foi sua experiência?</span>
+                                                    <button 
+                                                        onClick={() => (window as any).dispatchEvent(new CustomEvent('open-rating', { detail: { orderId: order.id } }))}
+                                                        className="px-4 py-1.5 bg-flame-500 hover:bg-flame-600 text-white rounded-full text-xs font-bold transition-colors"
+                                                    >
+                                                        Avaliar Pedido
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                <div className="lg:col-start-2 lg:row-start-1">
+                                    <h4 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Resumo Financeiro</h4>
+                                    <div className="bg-gray-950/50 p-4 rounded-xl border border-gray-800/50 min-h-[104px] flex flex-col justify-center">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="text-sm text-gray-400">Pagamento</span>
+                                            <span className="text-sm text-gray-200 font-medium capitalize">{order.payment_method || 'PIX'}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center pt-2 border-t border-gray-800/50">
+                                            <span className="text-gray-300 font-bold">Total</span>
+                                            <span className="text-flame-500 font-bold text-lg">R$ {Number(order.total).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {isEmployee && (
+                                    <div className="lg:col-start-2 lg:row-start-2 h-full flex flex-col">
+                                        <h4 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Cliente</h4>
+                                        <div className="bg-gray-950/50 p-4 rounded-xl border border-gray-800/50 flex items-start gap-3 min-h-[104px] flex-1">
+                                            <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center shrink-0">
+                                                <User className="w-5 h-5 text-gray-400" />
                                             </div>
-                                            <div className="flex justify-between items-center pt-2 border-t border-gray-800/50">
-                                                <span className="text-gray-300 font-bold">Total</span>
-                                                <span className="text-flame-500 font-bold text-xl">R$ {Number(order.total).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                                            <div className="flex-1">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-white font-medium">{order.user?.name}</span>
+                                                    <span className="text-gray-400 text-sm">{order.user?.phone}</span>
+                                                </div>
+                                                <p className="text-sm text-gray-400 mt-1">
+                                                    <MapPin className="w-3 h-3 inline mr-1" />
+                                                    {order.user?.address} - {order.user?.neighborhood}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
-                                    {isEmployee && order.user ? (
-                                        <div>
-                                            <h4 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Cliente</h4>
-                                            <div className="bg-gray-950/50 p-4 rounded-xl border border-gray-800/50 flex items-start gap-3">
-                                                <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                                                    <User className="w-5 h-5 text-gray-400" />
+                                ) || (
+                                    order.driver && (
+                                        <div className="lg:col-start-2 lg:row-start-2 h-full flex flex-col">
+                                            <h4 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Entrega</h4>
+                                            <div className="bg-gray-950/50 p-4 rounded-xl border border-gray-800/50 flex items-center gap-3 min-h-[104px] flex-1">
+                                                <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
+                                                    <Truck className="w-5 h-5 text-gray-400" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-gray-200 font-medium">{order.user.name}</p>
-                                                    <p className="text-gray-400 text-sm mt-1">{order.user.phone}</p>
-                                                    <p className="text-gray-400 text-sm">{order.user.address}, {order.user.neighborhood}</p>
+                                                    <p className="text-gray-400 text-sm">Motorista Responsável</p>
+                                                    <p className="text-gray-200 font-medium">{order.driver.name}</p>
                                                 </div>
                                             </div>
                                         </div>
-                                    ) : (
-                                        order.driver && (
-                                            <div>
-                                                <h4 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Entrega</h4>
-                                                <div className="bg-gray-950/50 p-4 rounded-xl border border-gray-800/50 flex items-center gap-3">
-                                                    <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
-                                                        <Truck className="w-5 h-5 text-gray-400" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-gray-400 text-sm">Motorista Responsável</p>
-                                                        <p className="text-gray-200 font-medium">{order.driver.name}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )
-                                    )}
-                                </div>
+                                    )
+                                )}
                             </div>
                         </motion.div>
                     );

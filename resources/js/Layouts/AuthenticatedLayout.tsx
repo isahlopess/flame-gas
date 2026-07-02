@@ -31,7 +31,7 @@ export default function Authenticated({
             <RatingModal />
             <div className="fixed top-0 w-full z-50 px-4 sm:px-6 pt-4 sm:pt-6 transition-all duration-500">
                 <header
-                    className={`max-w-6xl mx-auto rounded-2xl sm:rounded-full transition-all duration-500 ${
+                    className={`w-[95%] max-w-[1400px] mx-auto rounded-2xl sm:rounded-full transition-all duration-500 ${
                         isScrolled
                             ? 'py-3 px-4 sm:px-6 bg-navy-950/70 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-white/10'
                             : 'py-4 px-4 sm:px-6 bg-transparent border border-transparent'

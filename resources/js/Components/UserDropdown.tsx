@@ -39,7 +39,7 @@ export default function UserDropdown({ user, isScrolled }: UserDropdownProps) {
     if (user.role === 'customer') {
         menuItems = [
             { icon: 'fa-regular fa-user', label: 'Meu Perfil', href: route('profile.edit') },
-            { icon: 'fa-regular fa-rectangle-list', label: 'Meus Pedidos', href: '#pedidos' },
+            { icon: 'fa-regular fa-rectangle-list', label: 'Meus Pedidos', href: route('profile.edit') },
             { icon: 'fa-solid fa-gear', label: 'Configurações', href: route('profile.edit') },
         ];
     } else if (user.role === 'employee') {

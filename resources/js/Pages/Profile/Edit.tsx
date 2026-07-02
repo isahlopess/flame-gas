@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { CartProvider } from '@/Contexts/CartContext';
+import RatingModal from '@/Components/RatingModal';
 
 function EditContent({
     mustVerifyEmail,
@@ -29,9 +30,8 @@ function EditContent({
         <AuthenticatedLayout>
             <Head title="Meu Perfil - FlameGás" />
             <div className="min-h-screen bg-gray-950 text-gray-100 relative overflow-hidden py-12">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-orange-500/20 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2" />
                 <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-500/10 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2" />
-                <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="mx-auto w-[95%] max-w-[1400px] relative z-10">
                     <div className="mb-8 flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">
@@ -125,6 +125,7 @@ function EditContent({
                     </div>
                 </div>
             </div>
+            <RatingModal />
         </AuthenticatedLayout>
     );
 }
