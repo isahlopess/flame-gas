@@ -1,24 +1,32 @@
 import HubLayout from '@/Layouts/HubLayout';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Box, Clock, Navigation, Check, X } from 'lucide-react';
+import { MapPin, Box, Clock, Navigation, Check, X, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Queue({ queue: initialQueue }: { queue: any[] }) {
     const [queueList, setQueueList] = useState(initialQueue || []);
+    const [orderToDelete, setOrderToDelete] = useState<number | null>(null);
+    const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
 
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
     };
 
     const getUrgency = (createdAt: string) => {
-        const minutes = Math.floor(Math.random() * 60);
-        if (minutes > 45) return { color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', text: 'Crítico', pulse: true };
-        if (minutes > 20) return { color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', text: 'Atenção', pulse: false };
-        return { color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', text: 'Normal', pulse: false };
+        const diffInMs = new Date().getTime() - new Date(createdAt).getTime();
+        const minutes = Math.floor(Math.max(0, diffInMs) / 60000);
+        if (minutes > 45) return { color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', text: 'Crítico', pulse: true, mins: minutes };
+        if (minutes > 20) return { color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', text: 'Atenção', pulse: false, mins: minutes };
+        return { color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', text: 'Normal', pulse: false, mins: minutes };
     };
 
     const handleAccept = (id: number) => {
         setQueueList(prev => prev.filter(q => q.id !== id));
+    };
+
+    const handleDecline = (id: number) => {
+        setQueueList(prev => prev.filter(q => q.id !== id));
+        setOrderToDelete(null);
     };
 
     return (
@@ -70,7 +78,7 @@ export default function Queue({ queue: initialQueue }: { queue: any[] }) {
                                             <div className="flex items-center gap-3">
                                                 <div className="relative">
                                                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 border border-white/10 flex items-center justify-center font-bold text-white text-lg shadow-inner">
-                                                        {(order.user?.name || order.address).charAt(0)}
+                                                        {(order.user?.name || 'Cliente Avulso').charAt(0)}
                                                     </div>
                                                     {urgency.pulse && (
                                                         <span className="absolute -top-1 -right-1 flex h-3 w-3">
@@ -80,10 +88,15 @@ export default function Queue({ queue: initialQueue }: { queue: any[] }) {
                                                     )}
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-bold text-white tracking-tight">{order.user?.name || order.address}</h3>
-                                                    <div className={`flex items-center gap-1.5 text-xs font-bold mt-1 px-2 py-0.5 rounded-full w-fit ${urgency.bg} ${urgency.color} ${urgency.border} border`}>
-                                                        <Clock className="w-3 h-3" />
-                                                        {urgency.text}
+                                                    <h3 className="font-bold text-white tracking-tight">{order.user?.name || 'Cliente Avulso'}</h3>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <div className={`flex items-center gap-1.5 text-xs font-bold px-2 py-0.5 rounded-full w-fit ${urgency.bg} ${urgency.color} ${urgency.border} border`}>
+                                                            <Clock className="w-3 h-3" />
+                                                            {urgency.text}
+                                                        </div>
+                                                        <span className="text-xs font-medium text-slate-400 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">
+                                                            {urgency.mins > 60 ? `há ${Math.floor(urgency.mins / 60)}h ${urgency.mins % 60}m` : `há ${urgency.mins}m`}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -102,13 +115,38 @@ export default function Queue({ queue: initialQueue }: { queue: any[] }) {
                                                 </div>
                                             </div>
                                             <div className="w-full h-px bg-white/5"></div>
-                                            <div className="flex gap-3">
-                                                <Box className="w-5 h-5 text-slate-400 shrink-0" />
-                                                <div className="flex-1">
-                                                    <p className="text-sm text-slate-300">
-                                                        <strong className="text-white">{order.items?.length || 0}</strong> itens no pedido
-                                                    </p>
+                                            <div className="flex flex-col gap-3">
+                                                <div
+                                                    className="flex gap-3 cursor-pointer group/items"
+                                                    onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
+                                                >
+                                                    <Box className="w-5 h-5 text-slate-400 shrink-0 group-hover/items:text-flame-400 transition-colors" />
+                                                    <div className="flex-1 flex justify-between items-center">
+                                                        <p className="text-sm text-slate-300 group-hover/items:text-white transition-colors">
+                                                            <strong className="text-white">{order.items?.length || 0}</strong> itens no pedido
+                                                        </p>
+                                                        <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${expandedOrderId === order.id ? 'rotate-180' : ''}`} />
+                                                    </div>
                                                 </div>
+                                                <AnimatePresence>
+                                                    {expandedOrderId === order.id && order.items && (
+                                                        <motion.div
+                                                            initial={{ height: 0, opacity: 0 }}
+                                                            animate={{ height: 'auto', opacity: 1 }}
+                                                            exit={{ height: 0, opacity: 0 }}
+                                                            className="overflow-hidden"
+                                                        >
+                                                            <div className="pt-2 border-t border-white/5 space-y-2 mt-2">
+                                                                {order.items.map((item: any, idx: number) => (
+                                                                    <div key={idx} className="flex justify-between items-center text-sm">
+                                                                        <span className="text-slate-400">{item.quantity}x {item.product?.name || 'Produto'}</span>
+                                                                        <span className="text-white font-medium">{formatCurrency(Number(item.unit_price) * item.quantity)}</span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
                                             </div>
                                         </div>
                                         <div className="flex gap-3 mt-auto">
@@ -119,7 +157,7 @@ export default function Queue({ queue: initialQueue }: { queue: any[] }) {
                                                 <Check className="w-5 h-5" /> Aceitar Entrega
                                             </button>
                                             <button
-                                                onClick={() => handleAccept(order.id)}
+                                                onClick={() => setOrderToDelete(order.id)}
                                                 className="w-14 shrink-0 flex items-center justify-center bg-white/5 border border-white/10 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400 text-slate-400 rounded-xl transition-all"
                                             >
                                                 <X className="w-5 h-5" />
@@ -132,6 +170,45 @@ export default function Queue({ queue: initialQueue }: { queue: any[] }) {
                     </AnimatePresence>
                 </div>
             )}
+            <AnimatePresence>
+                {orderToDelete !== null && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0a0f1c]/80 backdrop-blur-sm p-4"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="bg-[#121827] border border-white/10 rounded-3xl p-6 max-w-sm w-full shadow-2xl relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-rose-500"></div>
+                            <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-4 text-red-500">
+                                <X className="w-8 h-8" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2">Excluir Pedido da Fila?</h3>
+                            <p className="text-sm text-slate-400 mb-6">Esta ação removerá o pedido da sua lista de oportunidades. O pedido continuará disponível para outros entregadores.</p>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setOrderToDelete(null)}
+                                    className="flex-1 py-2.5 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition-colors"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={() => handleDecline(orderToDelete)}
+                                    className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold transition-colors shadow-[0_0_15px_rgba(239,68,68,0.4)]"
+                                >
+                                    Excluir
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </HubLayout>
     );
 }

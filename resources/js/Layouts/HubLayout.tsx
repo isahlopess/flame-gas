@@ -101,7 +101,7 @@ export default function HubLayout({ children, title = 'Hub do Entregador' }: Hub
                     <UserDropdown user={auth.user} isScrolled={true} />
                 </header>
                 <div className="flex-1 overflow-y-auto">
-                    <div className="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto">
+                    <div className="p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto">
                         <motion.div
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}

@@ -1,8 +1,51 @@
 import HubLayout from '@/Layouts/HubLayout';
 import { motion } from 'framer-motion';
 import { Search, Calendar, Download, CheckCircle2, XCircle, MapPin, Box, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useRef } from 'react';
 
 export default function History({ history }: { history: any[] }) {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [dateFilter, setDateFilter] = useState('');
+    const dateInputRef = useRef<HTMLInputElement>(null);
+
+    const filteredHistory = history.filter(item => {
+        const matchesSearch = (item.user?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                              item.id.toString().includes(searchTerm) ||
+                              (item.address || '').toLowerCase().includes(searchTerm.toLowerCase());
+
+        let matchesDate = true;
+        if (dateFilter) {
+            const itemDate = new Date(item.created_at).toISOString().split('T')[0];
+            matchesDate = itemDate === dateFilter;
+        }
+
+        return matchesSearch && matchesDate;
+    });
+
+    const handleExport = () => {
+        const headers = ['ID', 'Cliente', 'Endereco', 'Bairro', 'Data', 'Total', 'Status'];
+        const rows = filteredHistory.map(item => [
+            item.id,
+            item.user?.name || item.address,
+            item.address,
+            item.neighborhood,
+            new Date(item.created_at).toLocaleString('pt-BR'),
+            item.total,
+            item.status === 'completed' ? 'Concluido' : 'Cancelado'
+        ]);
+
+        const csvContent = "data:text/csv;charset=utf-8,"
+            + [headers.join(';')].concat(rows.map(e => e.join(';'))).join("\n");
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `historico_entregas_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
     };
@@ -17,23 +60,53 @@ export default function History({ history }: { history: any[] }) {
                         </div>
                         <input
                             type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Buscar por ID ou cliente..."
                             className="block w-full pl-12 pr-4 py-3 border border-white/10 rounded-xl bg-white/5 text-white placeholder-slate-500 focus:ring-flame-500 focus:border-flame-500 sm:text-sm transition-all focus:bg-white/10"
                         />
                     </div>
                     <div className="flex gap-2 w-full sm:w-auto">
-                        <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
-                            <Calendar className="w-4 h-4" /> Data
-                        </button>
-                        <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
+                        <div className="relative flex-1 sm:flex-none">
+                            <button
+                                onClick={() => dateInputRef.current?.showPicker()}
+                                className="w-full cursor-pointer flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-colors"
+                            >
+                                <Calendar className="w-4 h-4" /> {dateFilter ? new Date(dateFilter + 'T12:00:00').toLocaleDateString('pt-BR') : 'Data'}
+                            </button>
+                            <input
+                                ref={dateInputRef}
+                                type="date"
+                                className="absolute bottom-0 left-0 opacity-0 pointer-events-none w-0 h-0"
+                                value={dateFilter}
+                                onChange={(e) => setDateFilter(e.target.value)}
+                            />
+                            {dateFilter && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDateFilter('');
+                                    }}
+                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 shadow-lg"
+                                >
+                                    <XCircle className="w-4 h-4" />
+                                </button>
+                            )}
+                        </div>
+                        <button
+                            onClick={handleExport}
+                            className="flex-1 cursor-pointer sm:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 rounded-xl text-sm font-bold text-white transition-all shadow-[0_4px_20px_-4px_rgba(16,185,129,0.5)]"
+                        >
                             <Download className="w-4 h-4" /> Exportar
                         </button>
                     </div>
                 </div>
-                <div className="p-6 sm:p-8 relative">
-                    <div className="absolute left-8 sm:left-12 top-8 bottom-8 w-px bg-white/5"></div>
-                    <div className="space-y-8">
-                        {history.map((item, index) => {
+                <div className="p-6 sm:p-8 relative min-h-[300px]">
+                    {filteredHistory.length > 0 ? (
+                        <>
+                            <div className="absolute left-8 sm:left-12 top-8 bottom-8 w-px bg-white/5"></div>
+                            <div className="space-y-8">
+                                {filteredHistory.map((item, index) => {
                             const isCompleted = item.status === 'completed';
                             return (
                                 <motion.div
@@ -87,31 +160,39 @@ export default function History({ history }: { history: any[] }) {
                                 </motion.div>
                             );
                         })}
-                    </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center h-full pt-10 pb-4 text-center">
+                            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                                <Box className="w-8 h-8 text-slate-500" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2">Nenhum registro encontrado</h3>
+                            <p className="text-slate-400 max-w-sm">
+                                Não encontramos entregas no histórico. Se estiver usando filtros, tente ajustá-los.
+                            </p>
+                        </div>
+                    )}
                 </div>
                 <div className="px-6 py-4 border-t border-white/5 bg-white/[0.02] flex items-center justify-between">
                     <p className="text-sm text-slate-400 hidden sm:block">
-                        Mostrando <span className="font-bold text-white">1</span> a <span className="font-bold text-white">7</span> de <span className="font-bold text-white">24</span> entregas
+                        Mostrando <span className="font-bold text-white">{filteredHistory.length > 0 ? 1 : 0}</span> a <span className="font-bold text-white">{filteredHistory.length}</span> de <span className="font-bold text-white">{history.length}</span> entregas
                     </p>
-                    <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                        <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
-                            <ChevronLeft className="w-5 h-5" />
-                        </button>
-                        <div className="flex gap-1">
-                            <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-flame-500 text-white font-bold shadow-[0_0_15px_rgba(249,115,22,0.3)]">
-                                1
+                    {filteredHistory.length > 0 && (
+                        <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                            <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+                                <ChevronLeft className="w-5 h-5" />
                             </button>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-transparent text-slate-400 hover:bg-white/5 transition-colors font-medium">
-                                2
-                            </button>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-transparent text-slate-400 hover:bg-white/5 transition-colors font-medium">
-                                3
+                            <div className="flex gap-1">
+                                <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-flame-500 text-white font-bold shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+                                    1
+                                </button>
+                            </div>
+                            <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+                                <ChevronRight className="w-5 h-5" />
                             </button>
                         </div>
-                        <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
-                            <ChevronRight className="w-5 h-5" />
-                        </button>
-                    </div>
+                    )}
                 </div>
             </div>
         </HubLayout>
