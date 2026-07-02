@@ -37,15 +37,15 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
     Route::get('/', function () {
         $period = request('period', 'week');
         $user = auth()->user();
-        
+
         $orders = Order::where('driver_id', $user->id)
                       ->whereIn('status', ['en_route', 'accepted'])
                       ->with('items.product')
                       ->get();
-                      
+
         $startDate = now();
         $groupType = 'day';
-        
+
         if ($period === 'today') {
             $startDate = now()->startOfDay();
             $groupType = 'hour';
@@ -54,22 +54,22 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
         } else {
             $startDate = now()->subDays(6)->startOfDay();
         }
-        
+
         $completedOrders = Order::where('driver_id', $user->id)
                              ->where('status', 'completed')
                              ->where('created_at', '>=', $startDate)
                              ->with('user')
                              ->get();
-                             
+
         $allTimeAvgRating = Order::where('driver_id', $user->id)->whereNotNull('rating')->avg('rating');
-                             
+
         $kpis = [
             'count' => $completedOrders->count(),
             'revenue' => (float) $completedOrders->sum('total'),
             'rating' => $allTimeAvgRating !== null ? round($allTimeAvgRating, 1) : 0.0,
             'en_route' => $orders->count(),
         ];
-        
+
         $periodData = [];
         if ($groupType === 'hour') {
             $periods = [
@@ -100,7 +100,7 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
                 $date = now()->subDays(29 - $i);
                 $dayOfWeekStats[$date->dayOfWeek]['days_in_period']++;
             }
-            
+
             foreach ($completedOrders as $order) {
                 $dayOfWeekStats[$order->created_at->dayOfWeek]['count']++;
                 $dayOfWeekStats[$order->created_at->dayOfWeek]['revenue'] += $order->total;
@@ -109,15 +109,15 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
                     $dayOfWeekStats[$order->created_at->dayOfWeek]['rating_count']++;
                 }
             }
-            
+
             for ($i = 0; $i < 7; $i++) {
                 $date = now()->subDays(6 - $i);
                 $dayIndex = $date->dayOfWeek;
                 $stats = $dayOfWeekStats[$dayIndex];
                 $div = $stats['days_in_period'] ?: 1;
-                
+
                 $avgRating = $stats['rating_count'] > 0 ? $stats['rating_sum'] / $stats['rating_count'] : 0.0;
-                
+
                 $periodData[] = [
                     'day' => $date->locale('pt_BR')->isoFormat('ddd'),
                     'count' => round($stats['count'] / $div, 1),
@@ -131,9 +131,9 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
                 $date = now()->subDays($days - 1 - $i);
                 $dayOrders = $completedOrders->where('created_at', '>=', $date->copy()->startOfDay())
                                           ->where('created_at', '<=', $date->copy()->endOfDay());
-                
+
                 $dayAvgRating = $dayOrders->whereNotNull('rating')->avg('rating');
-                
+
                 $periodData[] = [
                     'day' => $date->locale('pt_BR')->isoFormat('ddd'),
                     'count' => $dayOrders->count(),
@@ -183,13 +183,32 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
 
 Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')->group(function () {
     Route::get('/', function () {
-        $ordersCount = Order::count();
-        $revenue = Order::where('status', 'completed')->sum('total');
-        $customersCount = User::where('role', 'customer')->count();
-        $recentOrders = Order::with(['user', 'driver'])->orderBy('created_at', 'desc')->take(4)->get();
+        $period = request('period', 'today');
 
-        $statusCounts = Order::select('status', \DB::raw('count(*) as total'))->groupBy('status')->get();
-        $statusData = $statusCounts->map(function ($item) {
+        $startDate = now();
+        if ($period === 'today') {
+            $startDate = now()->startOfDay();
+        } elseif ($period === 'week') {
+            $startDate = now()->subDays(6)->startOfDay();
+        } elseif ($period === 'month') {
+            $startDate = now()->subDays(29)->startOfDay();
+        } else {
+            $period = 'today';
+            $startDate = now()->startOfDay();
+        }
+
+        $baseQuery = Order::where('created_at', '>=', $startDate);
+
+        $ordersCount = (clone $baseQuery)->count();
+        $revenue = (clone $baseQuery)->where('status', 'completed')->sum('total');
+        $customersCount = (clone $baseQuery)->distinct('user_id')->count('user_id');
+        $deliveriesToday = Order::whereDate('created_at', Carbon::today())->where('status', 'completed')->count();
+
+        $recentOrders = (clone $baseQuery)->with(['user', 'driver'])->orderBy('created_at', 'desc')->take(4)->get();
+
+        $statusCounts = (clone $baseQuery)->select('status', \DB::raw('count(*) as total'))->groupBy('status')->get();
+        $statusData = collect(['completed', 'en_route', 'pending', 'cancelled'])->map(function ($status) use ($statusCounts) {
+            $item = $statusCounts->firstWhere('status', $status);
             $colors = [
                 'completed' => '#10b981',
                 'en_route' => '#f97316',
@@ -203,16 +222,17 @@ Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')
                 'cancelled' => 'Cancelados'
             ];
             return [
-                'name' => $names[$item->status] ?? $item->status,
-                'value' => $item->total,
-                'color' => $colors[$item->status] ?? '#94a3b8'
+                'name' => $names[$status],
+                'value' => $item ? $item->total : 0,
+                'color' => $colors[$status]
             ];
         });
 
         $topDrivers = User::where('role', 'employee')
-            ->withCount(['driverOrders as deliveries' => function ($query) {
-                $query->where('status', 'completed');
+            ->withCount(['driverOrders as deliveries' => function ($query) use ($startDate) {
+                $query->where('status', 'completed')->where('created_at', '>=', $startDate);
             }])
+            ->having('deliveries', '>', 0)
             ->orderByDesc('deliveries')
             ->take(3)
             ->get()
@@ -225,28 +245,89 @@ Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')
             });
 
         $revenueChartData = [];
-        for ($i = 6; $i >= 0; $i--) {
-            $date = Carbon::today()->subDays($i);
-            $dayRevenue = Order::where('status', 'completed')
-                ->whereDate('created_at', $date)
-                ->sum('total');
-            $revenueChartData[] = [
-                'name' => $date->format('d M'),
-                'value' => $dayRevenue
+        if ($period === 'today') {
+            $periods = [
+                ['name' => '07h-09h', 'start' => 7, 'end' => 8],
+                ['name' => '09h-11h', 'start' => 9, 'end' => 10],
+                ['name' => '11h-13h', 'start' => 11, 'end' => 12],
+                ['name' => '13h-15h', 'start' => 13, 'end' => 14],
+                ['name' => '15h-17h', 'start' => 15, 'end' => 16],
+                ['name' => '17h-19h', 'start' => 17, 'end' => 18],
+                ['name' => '19h-21h', 'start' => 19, 'end' => 20],
             ];
+
+            $completedToday = Order::where('status', 'completed')
+                ->whereDate('created_at', Carbon::today())
+                ->get();
+
+            foreach ($periods as $p) {
+                $pOrders = $completedToday->filter(function($o) use ($p) {
+                    $h = $o->created_at->hour;
+                    return $h >= $p['start'] && $h <= $p['end'];
+                });
+
+                $revenueChartData[] = [
+                    'name' => $p['name'],
+                    'value' => (float) $pOrders->sum('total')
+                ];
+            }
+        } elseif ($period === 'week') {
+            for ($i = 6; $i >= 0; $i--) {
+                $date = Carbon::today()->subDays($i);
+                $val = Order::where('status', 'completed')->whereDate('created_at', $date)->sum('total');
+                $revenueChartData[] = ['name' => $date->format('d M'), 'value' => $val];
+            }
+        } else {
+            for ($i = 29; $i >= 0; $i--) {
+                $date = Carbon::today()->subDays($i);
+                $val = Order::where('status', 'completed')->whereDate('created_at', $date)->sum('total');
+                if ($i % 5 === 0 || $i === 0) {
+                    $revenueChartData[] = ['name' => $date->format('d M'), 'value' => $val];
+                }
+            }
         }
+
+        $notifications = Order::with(['user', 'driver'])
+            ->orderBy('updated_at', 'desc')
+            ->take(5)
+            ->get()
+            ->map(function ($order) {
+                if ($order->status === 'completed') {
+                    $msg = "Entregador " . ($order->driver->name ?? 'N/A') . " finalizou a rota.";
+                    $title = "Pedido Entregue";
+                } elseif ($order->status === 'en_route') {
+                    $msg = "Entregador " . ($order->driver->name ?? 'N/A') . " está a caminho.";
+                    $title = "Pedido em Rota";
+                } elseif ($order->status === 'pending') {
+                    $msg = "Novo pedido de " . ($order->user->name ?? $order->address) . " recebido!";
+                    $title = "Novo Pedido";
+                } else {
+                    $msg = "Pedido #" . $order->id . " foi cancelado.";
+                    $title = "Pedido Cancelado";
+                }
+                return [
+                    'id' => $order->id,
+                    'title' => $title,
+                    'message' => $msg,
+                    'time' => $order->updated_at->diffForHumans(),
+                    'timestamp' => $order->updated_at->timestamp * 1000,
+                    'is_read' => false,
+                ];
+            });
 
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
                 'ordersCount' => $ordersCount,
                 'revenue' => $revenue,
                 'customersCount' => $customersCount,
-                'deliveriesToday' => Order::whereDate('created_at', Carbon::today())->count(),
+                'deliveriesToday' => $deliveriesToday,
             ],
             'recentOrders' => $recentOrders,
             'statusData' => $statusData,
             'topDrivers' => $topDrivers,
             'revenueData' => $revenueChartData,
+            'currentPeriod' => $period,
+            'notifications' => $notifications,
         ]);
     })->name('admin.dashboard');
 
