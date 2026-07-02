@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import UserDropdown from '@/Components/UserDropdown';
-import { LayoutDashboard, ListTodo, History, LogOut } from 'lucide-react';
+import { LayoutDashboard, ListTodo, History, LogOut, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface HubLayoutProps {
@@ -18,6 +18,7 @@ export default function HubLayout({ children, title = 'Hub do Entregador' }: Hub
         { name: 'Dashboard', href: route('hub.dashboard'), icon: LayoutDashboard, active: currentRoute === '/hub' },
         { name: 'Fila de Pedidos', href: route('hub.queue'), icon: ListTodo, active: currentRoute === '/hub/queue' },
         { name: 'Histórico', href: route('hub.history'), icon: History, active: currentRoute === '/hub/history' },
+        { name: 'Perfil', href: route('hub.profile.edit'), icon: User, active: currentRoute.startsWith('/hub/profile') },
     ];
 
     return (

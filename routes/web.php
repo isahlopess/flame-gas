@@ -154,6 +154,13 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
                               ->get()
         ]);
     })->name('hub.history');
+
+    Route::get('/profile', function () {
+        return Inertia::render('Hub/Profile', [
+            'mustVerifyEmail' => auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail,
+            'status' => session('status'),
+        ]);
+    })->name('hub.profile.edit');
 });
 
 Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')->group(function () {
