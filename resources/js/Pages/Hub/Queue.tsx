@@ -1,12 +1,17 @@
 import HubLayout from '@/Layouts/HubLayout';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Box, Clock, Navigation, Check, X, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { MapPin, Box, Clock, Navigation, Check, X, ChevronDown, PackageCheck } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { router } from '@inertiajs/react';
 
-export default function Queue({ queue: initialQueue }: { queue: any[] }) {
+export default function Queue({ queue: initialQueue, activeOrders = [] }: { queue: any[], activeOrders?: any[] }) {
     const [queueList, setQueueList] = useState(initialQueue || []);
     const [orderToDelete, setOrderToDelete] = useState<number | null>(null);
     const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+
+    useEffect(() => {
+        setQueueList(initialQueue || []);
+    }, [initialQueue]);
 
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
@@ -21,7 +26,15 @@ export default function Queue({ queue: initialQueue }: { queue: any[] }) {
     };
 
     const handleAccept = (id: number) => {
-        setQueueList(prev => prev.filter(q => q.id !== id));
+        router.post(`/api/orders/${id}/accept`, {}, {
+            preserveScroll: true,
+        });
+    };
+
+    const handleComplete = (id: number) => {
+        router.post(`/api/orders/${id}/complete`, {}, {
+            preserveScroll: true,
+        });
     };
 
     const handleDecline = (id: number) => {
@@ -31,6 +44,67 @@ export default function Queue({ queue: initialQueue }: { queue: any[] }) {
 
     return (
         <HubLayout title="Fila de Pedidos">
+            {activeOrders && activeOrders.length > 0 && (
+                <div className="mb-8">
+                    <div className="flex items-center gap-3 mb-4 px-1">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                            <PackageCheck className="w-5 h-5 text-emerald-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-bold text-white">Entregas em Andamento</h2>
+                            <p className="text-sm text-slate-400">Pedidos que você aceitou e estão em rota</p>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {activeOrders.map(order => (
+                            <div key={order.id} className="bg-[#0a0f1c]/60 backdrop-blur-xl rounded-3xl p-5 border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.05)] flex flex-col relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full blur-2xl pointer-events-none"></div>
+                                <div className="flex justify-between items-start mb-6 relative z-10">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-700 flex items-center justify-center font-bold text-white text-lg shadow-inner">
+                                            {(order.user?.name || 'Cliente Avulso').charAt(0)}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-white tracking-tight">{order.user?.name || 'Cliente Avulso'}</h3>
+                                            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 mt-1">
+                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Em Rota
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span className="text-xl font-black text-emerald-400">
+                                        {formatCurrency(order.total)}
+                                    </span>
+                                </div>
+                                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 mb-6 relative z-10">
+                                    <div className="flex gap-3">
+                                        <MapPin className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                                        <div>
+                                            <p className="text-sm font-medium text-white leading-tight">
+                                                {order.address}
+                                            </p>
+                                            <p className="text-xs text-slate-400 mt-0.5">{order.neighborhood}</p>
+                                        </div>
+                                    </div>
+                                    <div className="w-full h-px bg-white/5 my-3"></div>
+                                    <div className="flex flex-col gap-2">
+                                        {order.items?.map((item: any, idx: number) => (
+                                            <div key={idx} className="flex justify-between items-center text-sm">
+                                                <span className="text-slate-300">{item.quantity}x {item.product?.name || 'Produto'}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => handleComplete(order.id)}
+                                    className="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all shadow-[0_4px_20px_-4px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2 relative z-10"
+                                >
+                                    <Check className="w-5 h-5" /> Finalizar Entrega
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
             <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#0a0f1c]/40 p-4 rounded-2xl border border-white/5 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-flame-500/10 border border-flame-500/20 flex items-center justify-center">
