@@ -127,9 +127,15 @@ export default function History({ history }: { history: any[] }) {
                                                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-4">
                                                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">#{item.id}</span>
                                                     <span className="hidden sm:block text-slate-600">•</span>
-                                                    <span className="text-sm text-slate-400 font-medium">
-                                                        {new Date(item.created_at).toLocaleString('pt-BR', { dateStyle: 'long', timeStyle: 'short' })}
-                                                    </span>
+                                                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-sm text-slate-400 font-medium">
+                                                        <span>Pedido: {new Date(item.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</span>
+                                                        {isCompleted && (
+                                                            <>
+                                                                <span className="hidden sm:block text-slate-600">|</span>
+                                                                <span className="text-emerald-400">Entrega: {new Date(item.updated_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</span>
+                                                            </>
+                                                        )}
+                                                    </div>
                                                 </div>
                                                 <div className="flex items-center gap-4 mb-4">
                                                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 border border-white/10 flex items-center justify-center font-bold text-white text-lg shadow-inner shrink-0">

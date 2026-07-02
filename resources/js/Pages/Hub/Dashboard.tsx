@@ -18,7 +18,7 @@ export default function Dashboard({ orders, queue, weeklyData, recentHistory, kp
     const stats = [
         { label: currentPeriod === 'today' ? 'Entregas Hoje' : 'Entregas no Período', value: kpis?.count || 0, icon: Package, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20', stroke: '#60a5fa', sparkline: sparklineCount, isCurrency: false, domain: [0, 'dataMax'] },
         { label: currentPeriod === 'today' ? 'Ganhos Hoje' : 'Ganhos no Período', value: formatCurrency(kpis?.revenue || 0), icon: Banknote, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', stroke: '#34d399', sparkline: sparklineRevenue, isCurrency: true, domain: [0, 'dataMax'] },
-        { label: 'Avaliação Média', value: '5.0', icon: Star, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', stroke: '#fbbf24', sparkline: sparklineRating, isCurrency: false, domain: [0, 10] },
+        { label: 'Avaliação Média', value: (kpis?.rating ?? 0).toFixed(1), icon: Star, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', stroke: '#fbbf24', sparkline: sparklineRating, isCurrency: false, domain: [0, 5] },
         { label: 'Em Rota Agora', value: kpis?.en_route || 0, icon: Truck, color: 'text-flame-400', bg: 'bg-flame-500/10', border: 'border-flame-500/20', stroke: '#f97316', sparkline: sparklineCount, isCurrency: false, domain: [0, 'dataMax'] },
     ];
 
@@ -257,8 +257,11 @@ export default function Dashboard({ orders, queue, weeklyData, recentHistory, kp
                                         <div className="text-xs text-slate-500">{order.neighborhood}</div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="text-sm text-slate-300">{new Date(order.created_at).toLocaleDateString('pt-BR')}</div>
-                                        <div className="text-xs text-slate-500">{new Date(order.created_at).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</div>
+                                        <div className="text-xs text-slate-400 mb-1">{new Date(order.created_at).toLocaleDateString('pt-BR')}</div>
+                                        <div className="flex flex-col gap-0.5 text-xs">
+                                            <span className="text-slate-500">Pedido: {new Date(order.created_at).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</span>
+                                            <span className="text-emerald-400 font-medium">Entrega: {new Date(order.updated_at).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</span>
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <span className="font-black text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full text-sm">
