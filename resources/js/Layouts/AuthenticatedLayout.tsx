@@ -5,11 +5,14 @@ import UserDropdown from '@/Components/UserDropdown';
 import CartButton from '@/Components/Cart/CartButton';
 import CartDrawer from '@/Components/Cart/CartDrawer';
 import CheckoutModal from '@/Components/Cart/CheckoutModal';
+import NotificationBell from '@/Components/NotificationBell';
+import RatingModal from '@/Components/RatingModal';
 
 export default function Authenticated({
     children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
-    const user = usePage().props.auth.user;
+    const { auth, notifications } = usePage<any>().props;
+    const user = auth.user;
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -25,6 +28,7 @@ export default function Authenticated({
         <div className="min-h-screen bg-gray-950 font-sans text-slate-100 selection:bg-flame-500 selection:text-white">
             <CartDrawer />
             <CheckoutModal />
+            <RatingModal />
             <div className="fixed top-0 w-full z-50 px-4 sm:px-6 pt-4 sm:pt-6 transition-all duration-500">
                 <header
                     className={`max-w-6xl mx-auto rounded-2xl sm:rounded-full transition-all duration-500 ${
@@ -57,6 +61,7 @@ export default function Authenticated({
                             {user && <UserDropdown user={user} isScrolled={isScrolled} />}
 
                             <div className={`w-px h-6 mx-2 ${isScrolled ? 'bg-navy-800' : 'bg-white/20'}`}></div>
+                            <NotificationBell isScrolled={isScrolled} notifications={notifications} />
                             <CartButton isScrolled={isScrolled} />
                         </nav>
                         <button

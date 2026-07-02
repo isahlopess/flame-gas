@@ -14,6 +14,9 @@ import { CartProvider, useCart } from '@/Contexts/CartContext';
 import CartButton from '@/Components/Cart/CartButton';
 import CartDrawer from '@/Components/Cart/CartDrawer';
 import CheckoutModal from '@/Components/Cart/CheckoutModal';
+import NotificationBell from '@/Components/NotificationBell';
+import RatingModal from '@/Components/RatingModal';
+import { usePage } from '@inertiajs/react';
 
 function WelcomeContent({
     auth,
@@ -21,6 +24,7 @@ function WelcomeContent({
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { addItem, setCartOpen } = useCart();
+    const { notifications } = usePage<any>().props;
 
     const { scrollY, scrollYProgress } = useScroll();
 
@@ -203,6 +207,7 @@ function WelcomeContent({
             <FloatingWhatsApp phoneNumber="5567999999999" accountName="FlameGás" avatar="/images/logo-icon.svg" />
             <CartDrawer />
             <CheckoutModal />
+            <RatingModal />
             <Head title="FlameGás - O seu botijão rápido" />
             <div className="fixed top-0 w-full z-50 px-4 sm:px-6 pt-4 sm:pt-6 transition-all duration-500">
                 <header
@@ -256,6 +261,7 @@ function WelcomeContent({
                                 </div>
                             )}
                             <div className={`w-px h-6 mx-2 ${isScrolled ? 'bg-slate-200 dark:bg-navy-800' : 'bg-white/20'}`}></div>
+                            {auth.user && <NotificationBell isScrolled={isScrolled} notifications={notifications} />}
                             <CartButton isScrolled={isScrolled} />
                         </nav>
                         <button

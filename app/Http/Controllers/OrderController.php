@@ -57,4 +57,64 @@ class OrderController extends Controller
             ]);
         });
     }
+
+    public function rate(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'feedback' => 'nullable|string',
+        ]);
+
+        $order = Order::findOrFail($id);
+
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        if ($order->status !== 'completed') {
+            return response()->json(['error' => 'Only completed orders can be rated'], 422);
+        }
+
+        $order->update([
+            'rating' => $validated['rating'],
+            'feedback' => $validated['feedback'],
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function accept(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+        
+        if ($order->status !== 'pending') {
+            return response()->json(['error' => 'Order is not pending'], 422);
+        }
+
+        $order->update([
+            'status' => 'en_route',
+            'driver_id' => $request->user()->id,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function complete(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+        
+        if ($order->status !== 'en_route' && $order->status !== 'accepted') {
+            return response()->json(['error' => 'Order is not en_route'], 422);
+        }
+
+        if ($order->driver_id !== $request->user()->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $order->update([
+            'status' => 'completed',
+        ]);
+
+        return redirect()->back();
+    }
 }

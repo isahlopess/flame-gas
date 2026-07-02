@@ -23,6 +23,8 @@ class Order extends Model
         'neighborhood',
         'city',
         'complement',
+        'rating',
+        'feedback',
     ];
 
     protected $casts = [

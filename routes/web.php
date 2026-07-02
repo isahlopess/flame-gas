@@ -29,6 +29,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/api/orders', [OrderController::class, 'store'])->name('api.orders.store');
+Route::post('/api/orders/{id}/rate', [OrderController::class, 'rate'])->name('api.orders.rate')->middleware('auth');
+Route::post('/api/orders/{id}/accept', [OrderController::class, 'accept'])->name('api.orders.accept')->middleware('auth');
+Route::post('/api/orders/{id}/complete', [OrderController::class, 'complete'])->name('api.orders.complete')->middleware('auth');
 
 Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix('hub')->group(function () {
     Route::get('/', function () {
@@ -58,10 +61,12 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
                              ->with('user')
                              ->get();
                              
+        $allTimeAvgRating = Order::where('driver_id', $user->id)->whereNotNull('rating')->avg('rating');
+                             
         $kpis = [
             'count' => $completedOrders->count(),
             'revenue' => (float) $completedOrders->sum('total'),
-            'rating' => 5.0,
+            'rating' => $allTimeAvgRating !== null ? round($allTimeAvgRating, 1) : 0.0,
             'en_route' => $orders->count(),
         ];
         
@@ -81,15 +86,16 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
                     $h = $o->created_at->hour;
                     return $h >= $p['start'] && $h <= $p['end'];
                 });
+                $periodAvgRating = $pOrders->whereNotNull('rating')->avg('rating');
                 $periodData[] = [
                     'day' => $p['name'],
                     'count' => $pOrders->count(),
                     'revenue' => (float) $pOrders->sum('total'),
-                    'rating' => 5.0
+                    'rating' => $periodAvgRating !== null ? round($periodAvgRating, 1) : 0.0
                 ];
             }
         } elseif ($period === 'month') {
-            $dayOfWeekStats = array_fill(0, 7, ['count' => 0, 'revenue' => 0, 'days_in_period' => 0]);
+            $dayOfWeekStats = array_fill(0, 7, ['count' => 0, 'revenue' => 0, 'days_in_period' => 0, 'rating_sum' => 0, 'rating_count' => 0]);
             for ($i = 0; $i < 30; $i++) {
                 $date = now()->subDays(29 - $i);
                 $dayOfWeekStats[$date->dayOfWeek]['days_in_period']++;
@@ -98,6 +104,10 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
             foreach ($completedOrders as $order) {
                 $dayOfWeekStats[$order->created_at->dayOfWeek]['count']++;
                 $dayOfWeekStats[$order->created_at->dayOfWeek]['revenue'] += $order->total;
+                if ($order->rating !== null) {
+                    $dayOfWeekStats[$order->created_at->dayOfWeek]['rating_sum'] += $order->rating;
+                    $dayOfWeekStats[$order->created_at->dayOfWeek]['rating_count']++;
+                }
             }
             
             for ($i = 0; $i < 7; $i++) {
@@ -106,11 +116,13 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
                 $stats = $dayOfWeekStats[$dayIndex];
                 $div = $stats['days_in_period'] ?: 1;
                 
+                $avgRating = $stats['rating_count'] > 0 ? $stats['rating_sum'] / $stats['rating_count'] : 0.0;
+                
                 $periodData[] = [
                     'day' => $date->locale('pt_BR')->isoFormat('ddd'),
                     'count' => round($stats['count'] / $div, 1),
                     'revenue' => (float) round($stats['revenue'] / $div, 2),
-                    'rating' => 5.0,
+                    'rating' => round($avgRating, 1),
                 ];
             }
         } else {
@@ -120,11 +132,13 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
                 $dayOrders = $completedOrders->where('created_at', '>=', $date->copy()->startOfDay())
                                           ->where('created_at', '<=', $date->copy()->endOfDay());
                 
+                $dayAvgRating = $dayOrders->whereNotNull('rating')->avg('rating');
+                
                 $periodData[] = [
                     'day' => $date->locale('pt_BR')->isoFormat('ddd'),
                     'count' => $dayOrders->count(),
                     'revenue' => (float) $dayOrders->sum('total'),
-                    'rating' => 5.0,
+                    'rating' => $dayAvgRating !== null ? round($dayAvgRating, 1) : 0.0,
                 ];
             }
         }
@@ -141,7 +155,11 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
 
     Route::get('/queue', function () {
         return Inertia::render('Hub/Queue', [
-            'queue' => Order::where('status', 'pending')->with('items.product')->get()
+            'queue' => Order::where('status', 'pending')->with(['items.product', 'user'])->get(),
+            'activeOrders' => Order::where('driver_id', auth()->id())
+                ->whereIn('status', ['en_route', 'accepted'])
+                ->with(['items.product', 'user'])
+                ->get()
         ]);
     })->name('hub.queue');
 
