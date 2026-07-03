@@ -21,6 +21,7 @@ class Product extends Model
         'min_stock',
         'category',
         'active',
+        'display_order',
     ];
 
     protected $casts = [

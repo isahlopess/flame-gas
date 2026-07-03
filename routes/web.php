@@ -16,7 +16,7 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
-        'products' => Product::where('active', true)->get(),
+        'products' => Product::where('active', true)->orderBy('display_order', 'asc')->get(),
     ]);
 });
 
@@ -359,9 +359,14 @@ Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')
 
     Route::get('/inventory', function () {
         return Inertia::render('Admin/Inventory/Index', [
-            'products' => Product::orderBy('name')->get()
+            'products' => Product::orderBy('display_order', 'asc')->get()
         ]);
     })->name('admin.inventory');
+
+    Route::post('/products', [\App\Http\Controllers\ProductController::class, 'store'])->name('admin.products.store');
+    Route::post('/products/{id}', [\App\Http\Controllers\ProductController::class, 'update'])->name('admin.products.update');
+    Route::delete('/products/{id}', [\App\Http\Controllers\ProductController::class, 'destroy'])->name('admin.products.destroy');
+    Route::post('/products-reorder', [\App\Http\Controllers\ProductController::class, 'reorder'])->name('admin.products.reorder');
 
     Route::get('/revenue', function () {
         $revenueDetails = Order::where('status', 'completed')->orderBy('created_at', 'desc')->get();

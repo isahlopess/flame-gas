@@ -20,7 +20,8 @@ import { usePage } from '@inertiajs/react';
 
 function WelcomeContent({
     auth,
-}: PageProps) {
+    products = [],
+}: PageProps & { products?: any[] }) {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { addItem, setCartOpen } = useCart();
@@ -41,68 +42,51 @@ function WelcomeContent({
 
     const [activeService, setActiveService] = useState(0);
 
-    const servicesData = [
+    const stylePalette = [
         {
-            id: 1,
             icon: "fa-solid fa-house",
-            title: "Para sua Casa",
-            subtitle: "O fogão sempre aceso",
-            description: "Garantimos o peso certo e a qualidade. Entrega expressa, instalação segura e sem dor de cabeça.",
             color: "text-flame-500",
             bgColor: "bg-flame-500",
             bgGradient: "from-flame-400 to-amber-500 dark:from-flame-600 dark:to-orange-800",
-            cta: "Adicionar P13 - R$ 115,00",
-            image: "/images/residential.png",
-            price: 115.00,
-            productName: "Botijão de Gás P13 (13kg)",
-            category: "Gás Residencial"
         },
         {
-            id: 2,
             icon: "fa-solid fa-industry",
-            title: "Para seu Negócio",
-            subtitle: "O fogo não pode apagar",
-            description: "Fornecemos cilindros P45 com reposição programada. Você foca em vender, e a gente cuida da sua energia.",
             color: "text-amber-500",
             bgColor: "bg-amber-500",
             bgGradient: "from-amber-400 to-yellow-500 dark:from-amber-600 dark:to-yellow-800",
-            cta: "Adicionar P45 - R$ 410,00",
-            image: "/images/commercial.png",
-            price: 410.00,
-            productName: "Cilindro de Gás P45 (45kg)",
-            category: "Gás Comercial"
         },
         {
-            id: 3,
             icon: "fa-solid fa-glass-water",
-            title: "Água Mineral",
-            subtitle: "Saúde e hidratação",
-            description: "Galões de 20L das melhores fontes da região. Entregamos junto com o seu gás ou separadamente.",
             color: "text-blue-500",
             bgColor: "bg-blue-500",
             bgGradient: "from-blue-400 to-cyan-400 dark:from-blue-600 dark:to-cyan-700",
-            cta: "Adicionar Galão 20L - R$ 15,00",
-            image: "/images/water_gallon.png",
-            price: 15.00,
-            productName: "Galão de Água Mineral (20L)",
-            category: "Água"
         },
         {
-            id: 4,
             icon: "fa-solid fa-wrench",
-            title: "Acessórios",
-            subtitle: "Segurança em primeiro lugar",
-            description: "Mangueiras, registros e válvulas certificados pelo Inmetro. Troque a cada 5 anos para sua segurança.",
             color: "text-emerald-500",
             bgColor: "bg-emerald-500",
             bgGradient: "from-emerald-400 to-teal-500 dark:from-emerald-600 dark:to-teal-800",
-            cta: "Adicionar Kit Segurança - R$ 45,00",
-            image: "/images/tech.png",
-            price: 45.00,
-            productName: "Kit Registro + Mangueira Inmetro",
-            category: "Acessórios"
         }
     ];
+
+    const servicesData = products.length > 0 ? products.map((prod, index) => {
+        const style = stylePalette[index % stylePalette.length];
+        return {
+            id: prod.id,
+            icon: style.icon,
+            title: prod.name,
+            subtitle: prod.category || 'Produto',
+            description: prod.description || 'Produto com qualidade garantida e entrega expressa.',
+            color: style.color,
+            bgColor: style.bgColor,
+            bgGradient: style.bgGradient,
+            cta: `Adicionar - R$ ${Number(prod.price).toFixed(2).replace('.', ',')}`,
+            image: prod.image || "/images/tech.png",
+            price: Number(prod.price),
+            productName: prod.name,
+            category: prod.category || 'Outros'
+        };
+    }) : [];
 
     const stepsRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress: stepsProgress } = useScroll({
@@ -325,15 +309,6 @@ function WelcomeContent({
                             className="flex justify-center mb-8"
                             style={{ y: useTransform(scrollY, [0, 500], [0, -150]) }}
                         >
-                            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm font-medium backdrop-blur-md shadow-2xl relative overflow-hidden group cursor-default">
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_3s_infinite]"></div>
-                                <span className="text-flame-500 text-lg">🔥</span>
-                                <span>
-                                    <strong className="text-white">
-                                        {typeof window !== 'undefined' ? Math.floor(Math.random() * (60 - 30 + 1) + 30) : 47} pedidos
-                                    </strong> realizados na última hora
-                                </span>
-                            </div>
                         </motion.div>
                         <motion.h1
                             className="text-5xl sm:text-6xl md:text-8xl font-heading font-extrabold tracking-tight mb-8 leading-[1.1] text-white"
@@ -474,11 +449,16 @@ function WelcomeContent({
                         </div>
                         <div className="relative w-full h-[700px] flex items-center justify-center perspective-1000 mt-10">
                             {servicesData.map((service, index) => {
-                                let relativeIndex = (index - activeService) % servicesData.length;
+                                let relativeIndex = servicesData.length > 0 ? (index - activeService) % servicesData.length : 0;
                                 if (relativeIndex < 0) relativeIndex += servicesData.length;
                                 let offset = relativeIndex;
-                                if (relativeIndex === 3) offset = -1;
-                                else if (relativeIndex === 2) offset = 2;
+                                if (servicesData.length > 2) {
+                                    if (relativeIndex > Math.floor(servicesData.length / 2)) {
+                                        offset = relativeIndex - servicesData.length;
+                                    } else if (relativeIndex === Math.floor(servicesData.length / 2) && servicesData.length % 2 === 0) {
+                                        offset = 2;
+                                    }
+                                }
 
                                 const isActive = offset === 0;
                                 return (
@@ -499,11 +479,11 @@ function WelcomeContent({
                                         }}
                                         initial={false}
                                         animate={{
-                                            x: `${offset === 2 ? 0 : offset * 75}%`,
-                                            scale: isActive ? 1 : (offset === 2 ? 0.7 : 0.85),
-                                            opacity: isActive ? 1 : (offset === 2 ? 0 : 0.4),
-                                            zIndex: isActive ? 10 : (offset === 2 ? 1 : 5),
-                                            rotateY: offset === -1 ? 15 : offset === 1 ? -15 : 0
+                                            x: `${Math.abs(offset) >= 2 ? 0 : offset * 75}%`,
+                                            scale: isActive ? 1 : (Math.abs(offset) >= 2 ? 0.7 : 0.85),
+                                            opacity: isActive ? 1 : (Math.abs(offset) >= 2 ? 0 : 0.4),
+                                            zIndex: isActive ? 10 : (Math.abs(offset) >= 2 ? 1 : 5),
+                                            rotateY: offset < 0 ? 15 : offset > 0 ? -15 : 0
                                         }}
                                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                     >
@@ -566,7 +546,8 @@ function WelcomeContent({
                             </button>
                             <div className="flex items-center gap-2">
                                 {servicesData.map((_, idx) => {
-                                    const activeMod = ((activeService % servicesData.length) + servicesData.length) % servicesData.length;
+                                    const len = servicesData.length > 0 ? servicesData.length : 1;
+                                    const activeMod = ((activeService % len) + len) % len;
                                     return (
                                         <button
                                             key={idx}
@@ -970,7 +951,7 @@ function WelcomeContent({
     );
 }
 
-export default function Welcome(props: PageProps) {
+export default function Welcome(props: PageProps & { products?: any[] }) {
     return (
         <CartProvider>
             <WelcomeContent {...props} />
