@@ -21,12 +21,23 @@ export default function Dashboard({ stats, recentOrders, statusData, topDrivers,
         return `${hours}h ${mins}m`;
     };
 
+    const formatTrend = (trend: number) => {
+        if (!trend) return '0%';
+        return trend > 0 ? `+${trend}%` : `${trend}%`;
+    };
+
+    const getDeliveriesLabel = () => {
+        if (currentPeriod === 'today') return 'Entregas Hoje';
+        if (currentPeriod === 'week') return 'Entregas na Semana';
+        return 'Entregas no Mês';
+    };
+
     const kpis = [
         { 
             label: 'Faturamento Total', 
             value: formatCurrency(stats?.revenue || 0), 
-            trend: '+12.5%', 
-            isPositive: true,
+            trend: formatTrend(stats?.revenueTrend), 
+            isPositive: (stats?.revenueTrend || 0) >= 0,
             icon: TrendingUp, 
             color: 'from-emerald-500 to-teal-400', 
             shadow: 'shadow-emerald-500/20' 
@@ -34,8 +45,8 @@ export default function Dashboard({ stats, recentOrders, statusData, topDrivers,
         { 
             label: 'Pedidos Realizados', 
             value: stats?.ordersCount || 0, 
-            trend: '+5.2%', 
-            isPositive: true,
+            trend: formatTrend(stats?.ordersTrend), 
+            isPositive: (stats?.ordersTrend || 0) >= 0,
             icon: ShoppingCart, 
             color: 'from-flame-500 to-amber-400', 
             shadow: 'shadow-flame-500/20' 
@@ -43,17 +54,17 @@ export default function Dashboard({ stats, recentOrders, statusData, topDrivers,
         { 
             label: 'Clientes Ativos', 
             value: stats?.customersCount || 0, 
-            trend: '+2.1%', 
-            isPositive: true,
+            trend: formatTrend(stats?.customersTrend), 
+            isPositive: (stats?.customersTrend || 0) >= 0,
             icon: Users, 
             color: 'from-blue-500 to-cyan-400', 
             shadow: 'shadow-blue-500/20' 
         },
         { 
-            label: 'Entregas Hoje', 
+            label: getDeliveriesLabel(), 
             value: stats?.deliveriesToday || 0, 
-            trend: '-1.4%', 
-            isPositive: false,
+            trend: formatTrend(stats?.deliveriesTrend), 
+            isPositive: (stats?.deliveriesTrend || 0) >= 0,
             icon: Truck, 
             color: 'from-purple-500 to-pink-400', 
             shadow: 'shadow-purple-500/20' 

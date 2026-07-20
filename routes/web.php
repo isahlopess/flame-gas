@@ -188,21 +188,42 @@ Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')
         $startDate = now();
         if ($period === 'today') {
             $startDate = now()->startOfDay();
+            $prevStartDate = now()->subDay()->startOfDay();
+            $prevEndDate = now()->subDay()->endOfDay();
         } elseif ($period === 'week') {
             $startDate = now()->subDays(6)->startOfDay();
+            $prevStartDate = now()->subDays(13)->startOfDay();
+            $prevEndDate = now()->subDays(7)->endOfDay();
         } elseif ($period === 'month') {
             $startDate = now()->subDays(29)->startOfDay();
+            $prevStartDate = now()->subDays(59)->startOfDay();
+            $prevEndDate = now()->subDays(30)->endOfDay();
         } else {
             $period = 'today';
             $startDate = now()->startOfDay();
+            $prevStartDate = now()->subDay()->startOfDay();
+            $prevEndDate = now()->subDay()->endOfDay();
         }
 
         $baseQuery = Order::where('created_at', '>=', $startDate);
+        $prevBaseQuery = Order::where('created_at', '>=', $prevStartDate)->where('created_at', '<=', $prevEndDate);
 
         $ordersCount = (clone $baseQuery)->count();
+        $prevOrdersCount = (clone $prevBaseQuery)->count();
+
         $revenue = (clone $baseQuery)->where('status', 'completed')->sum('total');
+        $prevRevenue = (clone $prevBaseQuery)->where('status', 'completed')->sum('total');
+
         $customersCount = (clone $baseQuery)->distinct('user_id')->count('user_id');
-        $deliveriesToday = Order::whereDate('created_at', Carbon::today())->where('status', 'completed')->count();
+        $prevCustomersCount = (clone $prevBaseQuery)->distinct('user_id')->count('user_id');
+
+        $deliveriesToday = (clone $baseQuery)->where('status', 'completed')->count();
+        $prevDeliveries = (clone $prevBaseQuery)->where('status', 'completed')->count();
+
+        $calcTrend = function ($curr, $prev) {
+            if ($prev == 0) return $curr > 0 ? 100 : 0;
+            return round((($curr - $prev) / $prev) * 100, 1);
+        };
 
         $recentOrders = (clone $baseQuery)->with(['user', 'driver'])->orderBy('created_at', 'desc')->take(4)->get();
 
@@ -318,9 +339,13 @@ Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
                 'ordersCount' => $ordersCount,
+                'ordersTrend' => $calcTrend($ordersCount, $prevOrdersCount),
                 'revenue' => $revenue,
+                'revenueTrend' => $calcTrend($revenue, $prevRevenue),
                 'customersCount' => $customersCount,
+                'customersTrend' => $calcTrend($customersCount, $prevCustomersCount),
                 'deliveriesToday' => $deliveriesToday,
+                'deliveriesTrend' => $calcTrend($deliveriesToday, $prevDeliveries),
             ],
             'recentOrders' => $recentOrders,
             'statusData' => $statusData,
