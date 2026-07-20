@@ -384,9 +384,18 @@ Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')
 
     Route::get('/orders', function () {
         return Inertia::render('Admin/Orders/Index', [
-            'orders' => Order::with(['user', 'driver', 'items.product'])->orderBy('created_at', 'desc')->get()
+            'orders' => Order::with(['user', 'driver', 'items.product'])->orderBy('created_at', 'desc')->get(),
+            'drivers' => User::where('role', 'employee')->orderBy('name')->get()
         ]);
     })->name('admin.orders');
+
+    Route::post('/orders/{id}/update-status', function (Illuminate\Http\Request $request, $id) {
+        $order = Order::findOrFail($id);
+        if ($request->has('status')) $order->status = $request->status;
+        if ($request->has('driver_id')) $order->driver_id = $request->driver_id;
+        $order->save();
+        return redirect()->back();
+    })->name('admin.orders.update_status');
 
     Route::get('/clients', function () {
         return Inertia::render('Admin/Clients/Index', [
