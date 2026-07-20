@@ -368,30 +368,57 @@ Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')
     Route::delete('/products/{id}', [\App\Http\Controllers\ProductController::class, 'destroy'])->name('admin.products.destroy');
     Route::post('/products-reorder', [\App\Http\Controllers\ProductController::class, 'reorder'])->name('admin.products.reorder');
 
+    Route::get('/revenue/export-pdf', [\App\Http\Controllers\RevenueExportController::class, 'exportPdf'])->name('admin.revenue.export.pdf');
+    Route::get('/revenue/export-csv', [\App\Http\Controllers\RevenueExportController::class, 'exportCsv'])->name('admin.revenue.export.csv');
+
     Route::get('/revenue', function () {
         $revenueDetails = Order::where('status', 'completed')->orderBy('created_at', 'desc')->get();
         $totalRevenue = $revenueDetails->sum('total');
 
+        $baseMethods = [
+            'Pix' => 0,
+            'Cartão de Crédito' => 0,
+            'Cartão de Débito' => 0,
+            'Dinheiro' => 0,
+        ];
+
         $paymentMethodsData = Order::where('status', 'completed')
             ->select('payment_method', \DB::raw('count(*) as total'))
             ->groupBy('payment_method')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'name' => $item->payment_method ?: 'Outros',
-                    'value' => $item->total
-                ];
-            });
+            ->get();
 
-        $totalPayments = $paymentMethodsData->sum('value');
-        $paymentMethods = $paymentMethodsData->map(function ($item) use ($totalPayments) {
+        foreach ($paymentMethodsData as $item) {
+            $rawName = strtolower($item->payment_method ?: 'outros');
+            $name = 'Outros';
+            
+            if (str_contains($rawName, 'pix')) $name = 'Pix';
+            elseif (str_contains($rawName, 'credito') || str_contains($rawName, 'crédito')) $name = 'Cartão de Crédito';
+            elseif (str_contains($rawName, 'debito') || str_contains($rawName, 'débito')) $name = 'Cartão de Débito';
+            elseif (str_contains($rawName, 'dinheiro') || str_contains($rawName, 'especie')) $name = 'Dinheiro';
+
+            if (isset($baseMethods[$name])) {
+                $baseMethods[$name] += $item->total;
+            } else {
+                $baseMethods['Outros'] = ($baseMethods['Outros'] ?? 0) + $item->total;
+            }
+        }
+
+        $totalPayments = array_sum($baseMethods);
+        
+        $paymentMethods = collect($baseMethods)->map(function ($total, $name) use ($totalPayments) {
             return [
-                'name' => $item['name'],
-                'value' => $totalPayments > 0 ? round(($item['value'] / $totalPayments) * 100) : 0
+                'name' => $name,
+                'value' => $totalPayments > 0 ? round(($total / $totalPayments) * 100) : 0,
+                'raw_count' => $total
             ];
-        });
+        })->sortByDesc('raw_count')->values()->toArray();
 
         $revenueChartData = [];
+        $meses = [
+            1 => 'Jan', 2 => 'Fev', 3 => 'Mar', 4 => 'Abr', 5 => 'Mai', 6 => 'Jun',
+            7 => 'Jul', 8 => 'Ago', 9 => 'Set', 10 => 'Out', 11 => 'Nov', 12 => 'Dez'
+        ];
+        
         for ($i = 5; $i >= 0; $i--) {
             $month = Carbon::today()->subMonths($i);
             $monthRevenue = Order::where('status', 'completed')
@@ -399,7 +426,7 @@ Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')
                 ->whereYear('created_at', $month->year)
                 ->sum('total');
             $revenueChartData[] = [
-                'name' => $month->format('M'),
+                'name' => $meses[$month->month],
                 'receita' => $monthRevenue,
                 'despesa' => $monthRevenue * 0.6
             ];
