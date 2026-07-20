@@ -12,7 +12,9 @@ interface AdminLayoutProps {
     headerActions?: ReactNode;
 }
 
-export default function AdminLayout({ children, title = 'Painel do Gestor', notifications = [], headerActions }: AdminLayoutProps) {
+const emptyArray: any[] = [];
+
+export default function AdminLayout({ children, title = 'Painel do Gestor', notifications = emptyArray, headerActions }: AdminLayoutProps) {
     const { auth } = usePage<PageProps>().props;
     const currentRoute = window.location.pathname;
     const [sidebarOpen, setSidebarOpen] = useState(false);
