@@ -35,13 +35,28 @@ export default function AdminLayout({ children, title = 'Painel do Gestor', noti
         setLocalNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
     };
 
-    const navItems = [
-        { name: 'Visão Geral', href: route('admin.dashboard'), icon: LayoutDashboard, active: currentRoute === '/admin' },
-        { name: 'Pedidos', href: route('admin.orders'), icon: ShoppingCart, active: currentRoute.startsWith('/admin/orders') },
-        { name: 'Clientes', href: route('admin.clients'), icon: Users, active: currentRoute.startsWith('/admin/clients') },
-        { name: 'Entregadores', href: route('admin.drivers'), icon: Truck, active: currentRoute.startsWith('/admin/drivers') },
-        { name: 'Estoque', href: route('admin.inventory'), icon: Package, active: currentRoute.startsWith('/admin/inventory') },
-        { name: 'Faturamento', href: route('admin.revenue'), icon: TrendingUp, active: currentRoute.startsWith('/admin/revenue') },
+    const navSections = [
+        {
+            title: 'Principal',
+            items: [
+                { name: 'Visão Geral', href: route('admin.dashboard'), icon: LayoutDashboard, active: currentRoute === '/admin' },
+            ]
+        },
+        {
+            title: 'Operacional',
+            items: [
+                { name: 'Pedidos', href: route('admin.orders'), icon: ShoppingCart, active: currentRoute.startsWith('/admin/orders') },
+                { name: 'Entregadores', href: route('admin.drivers'), icon: Truck, active: currentRoute.startsWith('/admin/drivers') },
+            ]
+        },
+        {
+            title: 'Administrativo',
+            items: [
+                { name: 'Clientes', href: route('admin.clients'), icon: Users, active: currentRoute.startsWith('/admin/clients') },
+                { name: 'Estoque', href: route('admin.inventory'), icon: Package, active: currentRoute.startsWith('/admin/inventory') },
+                { name: 'Faturamento', href: route('admin.revenue'), icon: TrendingUp, active: currentRoute.startsWith('/admin/revenue') },
+            ]
+        }
     ];
 
     return (
@@ -75,32 +90,45 @@ export default function AdminLayout({ children, title = 'Painel do Gestor', noti
                         <i className="fa-solid fa-xmark text-xl"></i>
                     </button>
                 </div>
-                <nav className="flex-1 py-8 space-y-3 overflow-x-hidden px-4">
-                    {navItems.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                            <Link
-                                key={item.name}
-                                href={item.href}
-                                className={`flex items-center rounded-2xl transition-all font-medium relative overflow-hidden group/item ${
-                                    item.active
-                                        ? 'bg-flame-500/10 text-flame-500'
-                                        : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                                }`}
-                                style={{ height: '52px' }}
-                            >
-                                <div className="w-12 h-12 shrink-0 flex items-center justify-center">
-                                    <Icon className={`w-5 h-5 ${item.active ? 'text-flame-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]' : 'group-hover/item:scale-110 transition-transform'}`} />
-                                </div>
-                                <span className={`transition-opacity duration-300 whitespace-nowrap absolute left-14 tracking-wide ${sidebarOpen ? 'opacity-100' : 'opacity-0 lg:group-hover:opacity-100'}`}>
-                                    {item.name}
+                <nav className="flex-1 py-8 overflow-y-auto overflow-x-hidden px-4 space-y-8 custom-scrollbar">
+                    {navSections.map((section, idx) => (
+                        <div key={idx} className="flex flex-col gap-2 relative">
+                            <div className="flex items-center gap-3 px-3 mb-1">
+                                <span className={`text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 whitespace-nowrap transition-all duration-300 ${sidebarOpen ? 'opacity-100 max-w-[100px]' : 'opacity-0 max-w-0 overflow-hidden lg:group-hover:max-w-[100px] lg:group-hover:opacity-100'}`}>
+                                    {section.title}
                                 </span>
-                                {item.active && (
-                                    <div className="absolute left-0 top-1 bottom-1 w-1 bg-flame-500 rounded-r-full shadow-[0_0_10px_rgba(249,115,22,0.5)]"></div>
-                                )}
-                            </Link>
-                        );
-                    })}
+                                <div className="h-px bg-white/10 flex-1"></div>
+                            </div>
+                            {section.items.map((item) => {
+                                const Icon = item.icon;
+                                return (
+                                    <Link
+                                        key={item.name}
+                                        href={item.href}
+                                        className={`flex items-center rounded-2xl transition-all font-medium relative overflow-hidden group/item ${
+                                            item.active
+                                                ? 'bg-flame-500/10 text-flame-500'
+                                                : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                                        }`}
+                                        style={{ height: '52px' }}
+                                    >
+                                        <div className="w-12 h-12 shrink-0 flex items-center justify-center relative z-10">
+                                            <Icon className={`w-5 h-5 ${item.active ? 'text-flame-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]' : 'group-hover/item:scale-110 transition-transform'}`} />
+                                        </div>
+                                        <span className={`transition-opacity duration-300 whitespace-nowrap absolute left-12 tracking-wide z-10 ${sidebarOpen ? 'opacity-100' : 'opacity-0 lg:group-hover:opacity-100'}`}>
+                                            {item.name}
+                                        </span>
+                                        {item.active && (
+                                            <>
+                                                <div className="absolute left-0 top-1 bottom-1 w-1 bg-flame-500 rounded-r-full shadow-[0_0_10px_rgba(249,115,22,0.5)] z-10"></div>
+                                                <div className="absolute inset-0 bg-gradient-to-r from-flame-500/10 to-transparent z-0"></div>
+                                            </>
+                                        )}
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    ))}
                 </nav>
                 <div className="border-t border-white/5 p-4 overflow-hidden shrink-0">
                     <div className={`flex items-center gap-3 mb-6 px-2 whitespace-nowrap transition-opacity duration-300 delay-75 ${sidebarOpen ? 'opacity-100' : 'opacity-0 lg:group-hover:opacity-100'}`}>
