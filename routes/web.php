@@ -397,14 +397,10 @@ Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')
         return redirect()->back();
     })->name('admin.orders.update_status');
 
-    Route::get('/clients', function () {
-        return Inertia::render('Admin/Clients/Index', [
-            'clients' => User::where('role', 'customer')
-                            ->withCount('orders')
-                            ->orderBy('created_at', 'desc')
-                            ->get()
-        ]);
-    })->name('admin.clients');
+    Route::get('/clients', [\App\Http\Controllers\Admin\ClientController::class, 'index'])->name('admin.clients');
+    Route::post('/clients', [\App\Http\Controllers\Admin\ClientController::class, 'store'])->name('admin.clients.store');
+    Route::put('/clients/{id}', [\App\Http\Controllers\Admin\ClientController::class, 'update'])->name('admin.clients.update');
+    Route::delete('/clients/{id}', [\App\Http\Controllers\Admin\ClientController::class, 'destroy'])->name('admin.clients.destroy');
 
     Route::get('/drivers', [App\Http\Controllers\Admin\DriverController::class, 'index'])->name('admin.drivers');
     Route::post('/drivers/invite', [App\Http\Controllers\Admin\DriverController::class, 'generateInvite'])->name('admin.drivers.invite');
