@@ -104,19 +104,21 @@ export default function Register() {
                             className="overflow-hidden"
                         >
                             <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 p-4 rounded-xl">
-                                <InputLabel htmlFor="invite_code" value="Código de Parceria (Opcional)" className="font-semibold text-amber-700 dark:text-amber-400" />
+                                <InputLabel htmlFor="invite_code" value="Código de Convite (Obrigatório)" className="font-semibold text-amber-700 dark:text-amber-400" />
                                 <TextInput
                                     id="invite_code"
                                     name="invite_code"
                                     value={data.invite_code}
                                     className="mt-2 block w-full bg-white dark:bg-navy-900 border-amber-200 dark:border-amber-500/30 rounded-xl focus:ring-amber-500 focus:border-amber-500 shadow-sm"
-                                    onChange={(e) => setData('invite_code', e.target.value)}
+                                    onChange={(e) => setData('invite_code', e.target.value.toUpperCase())}
+                                    required={data.role === 'employee'}
                                     placeholder="Ex: FLAME-123"
                                     icon={<i className="fa-solid fa-handshake"></i>}
                                 />
                                 <p className="text-xs text-amber-600 dark:text-amber-500/80 mt-2">
-                                    Se você foi indicado por uma distribuidora, insira o código acima.
+                                    Para se cadastrar como entregador, você precisa inserir o código fornecido pelo seu gestor.
                                 </p>
+                                <InputError message={errors.invite_code} className="mt-2" />
                             </div>
                         </motion.div>
                     )}

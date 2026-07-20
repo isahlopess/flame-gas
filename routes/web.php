@@ -406,16 +406,10 @@ Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')
         ]);
     })->name('admin.clients');
 
-    Route::get('/drivers', function () {
-        return Inertia::render('Admin/Drivers/Index', [
-            'drivers' => User::where('role', 'employee')
-                            ->withCount(['driverOrders as deliveries' => function ($query) {
-                                $query->where('status', 'completed');
-                            }])
-                            ->orderBy('created_at', 'desc')
-                            ->get()
-        ]);
-    })->name('admin.drivers');
+    Route::get('/drivers', [App\Http\Controllers\Admin\DriverController::class, 'index'])->name('admin.drivers');
+    Route::post('/drivers/invite', [App\Http\Controllers\Admin\DriverController::class, 'generateInvite'])->name('admin.drivers.invite');
+    Route::put('/drivers/{id}', [App\Http\Controllers\Admin\DriverController::class, 'update'])->name('admin.drivers.update');
+    Route::delete('/drivers/{id}', [App\Http\Controllers\Admin\DriverController::class, 'destroy'])->name('admin.drivers.destroy');
 
     Route::get('/inventory', function () {
         return Inertia::render('Admin/Inventory/Index', [

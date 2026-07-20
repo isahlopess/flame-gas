@@ -36,7 +36,20 @@ class RegisteredUserController extends Controller
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::min(8)->mixedCase()->symbols()],
             'role' => 'required|string|in:customer,employee',
+            'invite_code' => 'nullable|string',
         ]);
+
+        if ($request->role === 'employee') {
+            $invite = \App\Models\InviteCode::where('code', $request->invite_code)
+                ->whereNull('used_at')
+                ->first();
+
+            if (!$invite) {
+                throw ValidationException::withMessages([
+                    'invite_code' => 'O código de convite fornecido é inválido ou já foi utilizado.',
+                ]);
+            }
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -46,6 +59,12 @@ class RegisteredUserController extends Controller
         
         $user->role = $request->role;
         $user->save();
+
+        if ($request->role === 'employee' && isset($invite)) {
+            $invite->used_at = now();
+            $invite->used_by = $user->id;
+            $invite->save();
+        }
 
         event(new Registered($user));
 
