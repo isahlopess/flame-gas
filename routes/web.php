@@ -72,16 +72,29 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
 
         $periodData = [];
         if ($groupType === 'hour') {
-            $periods = [
-                ['name' => '07h-09h', 'start' => 7, 'end' => 8],
-                ['name' => '09h-11h', 'start' => 9, 'end' => 10],
-                ['name' => '11h-13h', 'start' => 11, 'end' => 12],
-                ['name' => '13h-15h', 'start' => 13, 'end' => 14],
-                ['name' => '15h-17h', 'start' => 15, 'end' => 16],
-                ['name' => '17h-19h', 'start' => 17, 'end' => 18],
-                ['name' => '19h-21h', 'start' => 19, 'end' => 20],
-            ];
+            $currentHour = now()->hour;
+            if ($currentHour < 12) {
+                $periods = [
+                    ['name' => '07h-08h', 'start' => 7, 'end' => 7],
+                    ['name' => '08h-09h', 'start' => 8, 'end' => 8],
+                    ['name' => '09h-10h', 'start' => 9, 'end' => 9],
+                    ['name' => '10h-11h', 'start' => 10, 'end' => 10],
+                    ['name' => '11h-12h', 'start' => 11, 'end' => 11],
+                ];
+            } else {
+                $periods = [
+                    ['name' => '07h-09h', 'start' => 7, 'end' => 8],
+                    ['name' => '09h-11h', 'start' => 9, 'end' => 10],
+                    ['name' => '11h-13h', 'start' => 11, 'end' => 12],
+                    ['name' => '13h-15h', 'start' => 13, 'end' => 14],
+                    ['name' => '15h-17h', 'start' => 15, 'end' => 16],
+                    ['name' => '17h-19h', 'start' => 17, 'end' => 18],
+                    ['name' => '19h-21h', 'start' => 19, 'end' => 20],
+                ];
+            }
             foreach ($periods as $p) {
+                if ($p['start'] > $currentHour) break;
+                
                 $pOrders = $completedOrders->filter(function($o) use ($p) {
                     $h = $o->created_at->hour;
                     return $h >= $p['start'] && $h <= $p['end'];
@@ -267,21 +280,34 @@ Route::middleware(['auth', RoleMiddleware::class . ':manager'])->prefix('admin')
 
         $revenueChartData = [];
         if ($period === 'today') {
-            $periods = [
-                ['name' => '07h-09h', 'start' => 7, 'end' => 8],
-                ['name' => '09h-11h', 'start' => 9, 'end' => 10],
-                ['name' => '11h-13h', 'start' => 11, 'end' => 12],
-                ['name' => '13h-15h', 'start' => 13, 'end' => 14],
-                ['name' => '15h-17h', 'start' => 15, 'end' => 16],
-                ['name' => '17h-19h', 'start' => 17, 'end' => 18],
-                ['name' => '19h-21h', 'start' => 19, 'end' => 20],
-            ];
+            $currentHour = now()->hour;
+            if ($currentHour < 12) {
+                $periods = [
+                    ['name' => '07h-08h', 'start' => 7, 'end' => 7],
+                    ['name' => '08h-09h', 'start' => 8, 'end' => 8],
+                    ['name' => '09h-10h', 'start' => 9, 'end' => 9],
+                    ['name' => '10h-11h', 'start' => 10, 'end' => 10],
+                    ['name' => '11h-12h', 'start' => 11, 'end' => 11],
+                ];
+            } else {
+                $periods = [
+                    ['name' => '07h-09h', 'start' => 7, 'end' => 8],
+                    ['name' => '09h-11h', 'start' => 9, 'end' => 10],
+                    ['name' => '11h-13h', 'start' => 11, 'end' => 12],
+                    ['name' => '13h-15h', 'start' => 13, 'end' => 14],
+                    ['name' => '15h-17h', 'start' => 15, 'end' => 16],
+                    ['name' => '17h-19h', 'start' => 17, 'end' => 18],
+                    ['name' => '19h-21h', 'start' => 19, 'end' => 20],
+                ];
+            }
 
             $completedToday = Order::where('status', 'completed')
                 ->whereDate('created_at', Carbon::today())
                 ->get();
 
             foreach ($periods as $p) {
+                if ($p['start'] > $currentHour) break;
+                
                 $pOrders = $completedToday->filter(function($o) use ($p) {
                     $h = $o->created_at->hour;
                     return $h >= $p['start'] && $h <= $p['end'];
