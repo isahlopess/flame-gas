@@ -87,7 +87,7 @@ export default function History({ history }: { history: any[] }) {
                                         e.stopPropagation();
                                         setDateFilter('');
                                     }}
-                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 shadow-lg"
+                                    className="cursor-pointer absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 shadow-lg"
                                 >
                                     <XCircle className="w-4 h-4" />
                                 </button>
@@ -186,15 +186,15 @@ export default function History({ history }: { history: any[] }) {
                     </p>
                     {filteredHistory.length > 0 && (
                         <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                            <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+                            <button className="cursor-pointer w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
                                 <ChevronLeft className="w-5 h-5" />
                             </button>
                             <div className="flex gap-1">
-                                <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-flame-500 text-white font-bold shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+                                <button className="cursor-pointer w-10 h-10 flex items-center justify-center rounded-xl bg-flame-500 text-white font-bold shadow-[0_0_15px_rgba(249,115,22,0.3)]">
                                     1
                                 </button>
                             </div>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+                            <button className="cursor-pointer w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
                                 <ChevronRight className="w-5 h-5" />
                             </button>
                         </div>

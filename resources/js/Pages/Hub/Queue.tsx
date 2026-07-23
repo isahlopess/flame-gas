@@ -27,12 +27,14 @@ export default function Queue({ queue: initialQueue, activeOrders = [] }: { queu
 
     const handleAccept = (id: number) => {
         router.post(`/api/orders/${id}/accept`, {}, {
+            preserveState: true,
             preserveScroll: true,
         });
     };
 
     const handleComplete = (id: number) => {
         router.post(`/api/orders/${id}/complete`, {}, {
+            preserveState: true,
             preserveScroll: true,
         });
     };
@@ -96,7 +98,7 @@ export default function Queue({ queue: initialQueue, activeOrders = [] }: { queu
                                 </div>
                                 <button
                                     onClick={() => handleComplete(order.id)}
-                                    className="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all shadow-[0_4px_20px_-4px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2 relative z-10"
+                                    className="cursor-pointer w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all shadow-[0_4px_20px_-4px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2 relative z-10"
                                 >
                                     <Check className="w-5 h-5" /> Finalizar Entrega
                                 </button>
@@ -116,7 +118,7 @@ export default function Queue({ queue: initialQueue, activeOrders = [] }: { queu
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <button className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-white hover:bg-white/10 transition-colors flex items-center gap-2">
+                    <button className="cursor-pointer px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-white hover:bg-white/10 transition-colors flex items-center gap-2">
                         <Navigation className="w-4 h-4" /> Mais Próximos
                     </button>
                 </div>
@@ -226,13 +228,13 @@ export default function Queue({ queue: initialQueue, activeOrders = [] }: { queu
                                         <div className="flex gap-3 mt-auto">
                                             <button
                                                 onClick={() => handleAccept(order.id)}
-                                                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-flame-500 to-flame-600 hover:from-flame-400 hover:to-flame-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-[0_4px_20px_-4px_rgba(249,115,22,0.5)] group-hover:shadow-[0_4px_25px_-2px_rgba(249,115,22,0.7)]"
+                                                className="cursor-pointer flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-flame-500 to-flame-600 hover:from-flame-400 hover:to-flame-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-[0_4px_20px_-4px_rgba(249,115,22,0.5)] group-hover:shadow-[0_4px_25px_-2px_rgba(249,115,22,0.7)]"
                                             >
                                                 <Check className="w-5 h-5" /> Aceitar Entrega
                                             </button>
                                             <button
                                                 onClick={() => setOrderToDelete(order.id)}
-                                                className="w-14 shrink-0 flex items-center justify-center bg-white/5 border border-white/10 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400 text-slate-400 rounded-xl transition-all"
+                                                className="cursor-pointer w-14 shrink-0 flex items-center justify-center bg-white/5 border border-white/10 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400 text-slate-400 rounded-xl transition-all"
                                             >
                                                 <X className="w-5 h-5" />
                                             </button>
@@ -268,13 +270,13 @@ export default function Queue({ queue: initialQueue, activeOrders = [] }: { queu
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setOrderToDelete(null)}
-                                    className="flex-1 py-2.5 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition-colors"
+                                    className="cursor-pointer flex-1 py-2.5 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition-colors"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     onClick={() => handleDecline(orderToDelete)}
-                                    className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold transition-colors shadow-[0_0_15px_rgba(239,68,68,0.4)]"
+                                    className="cursor-pointer flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold transition-colors shadow-[0_0_15px_rgba(239,68,68,0.4)]"
                                 >
                                     Excluir
                                 </button>

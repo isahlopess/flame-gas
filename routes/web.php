@@ -40,7 +40,7 @@ Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix
 
         $orders = Order::where('driver_id', $user->id)
                       ->whereIn('status', ['en_route', 'accepted'])
-                      ->with('items.product')
+                      ->with(['items.product', 'user'])
                       ->get();
 
         $startDate = now();

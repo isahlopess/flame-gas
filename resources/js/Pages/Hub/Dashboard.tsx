@@ -38,6 +38,22 @@ export default function Dashboard({ orders, queue, weeklyData, recentHistory, kp
     const handlePeriodChange = (period: string) => {
         router.get(route('hub.dashboard'), { period }, { preserveState: true, preserveScroll: true });
     };
+
+    const handleAccept = (id: number) => {
+        router.post(`/api/orders/${id}/accept`, {}, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    const handleComplete = (id: number) => {
+        router.post(`/api/orders/${id}/complete`, {}, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    const combinedQueue = [...orders, ...queue];
     const currentHour = new Date().getHours();
     let currentBlockIndex = weeklyData.length - 1;
     if (currentPeriod === 'today') {
@@ -53,7 +69,7 @@ export default function Dashboard({ orders, queue, weeklyData, recentHistory, kp
                         <button
                             key={p}
                             onClick={() => handlePeriodChange(p)}
-                            className={`px-5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${currentPeriod === p ? 'bg-gradient-to-r from-flame-600 to-flame-500 text-white shadow-[0_2px_10px_rgba(249,115,22,0.4)]' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                            className={`cursor-pointer px-5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${currentPeriod === p ? 'bg-gradient-to-r from-flame-600 to-flame-500 text-white shadow-[0_2px_10px_rgba(249,115,22,0.4)]' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
                         >
                             {p === 'today' ? 'Hoje' : p === 'week' ? '7 Dias' : '30 Dias'}
                         </button>
@@ -172,13 +188,12 @@ export default function Dashboard({ orders, queue, weeklyData, recentHistory, kp
                                 Na Fila Agora
                             </h2>
                             <span className="bg-flame-500/10 border border-flame-500/20 text-flame-400 text-xs font-bold px-3 py-1 rounded-full">
-                                {queue?.length || 0}
+                                {combinedQueue.length}
                             </span>
                         </div>
                         <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-                            {queue && queue.length > 0 ? queue.slice(0, 4).map((order) => (
-                                <Link
-                                    href={route('hub.queue')}
+                            {combinedQueue.length > 0 ? combinedQueue.slice(0, 4).map((order) => (
+                                <div
                                     key={order.id}
                                     className="block p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 hover:bg-white/10 transition-all group relative overflow-hidden"
                                 >
@@ -190,25 +205,47 @@ export default function Dashboard({ orders, queue, weeklyData, recentHistory, kp
                                             </div>
                                             <div className="min-w-0">
                                                 <span className="font-bold text-white text-sm block truncate">{order.user?.name || 'Cliente Avulso'}</span>
-                                                <span className="text-xs font-medium text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full mt-1 inline-block">Pendente</span>
+                                                <span className={`text-xs font-medium px-2 py-0.5 rounded-full mt-1 inline-block ${
+                                                    order.status === 'pending' ? 'text-amber-400 bg-amber-400/10' :
+                                                    'text-blue-400 bg-blue-400/10'
+                                                }`}>
+                                                    {order.status === 'pending' ? 'Pendente' : 'Em Rota'}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2 text-xs text-slate-400 pl-2">
-                                        <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                                        <span className="truncate">{order.address}, {order.neighborhood}</span>
+                                    <div className="flex items-center justify-between pl-2">
+                                        <div className="flex items-center gap-2 text-xs text-slate-400 max-w-[65%]">
+                                            <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                                            <span className="truncate">{order.address}, {order.neighborhood}</span>
+                                        </div>
+                                        {order.status === 'pending' ? (
+                                            <button
+                                                onClick={(e) => { e.preventDefault(); handleAccept(order.id); }}
+                                                className="cursor-pointer text-xs font-bold text-white bg-flame-500 hover:bg-flame-600 px-3 py-1.5 rounded-lg transition-colors shadow-lg shrink-0"
+                                            >
+                                                Aceitar
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={(e) => { e.preventDefault(); handleComplete(order.id); }}
+                                                className="cursor-pointer text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 px-3 py-1.5 rounded-lg transition-colors shadow-lg shrink-0"
+                                            >
+                                                Finalizar
+                                            </button>
+                                        )}
                                     </div>
-                                </Link>
+                                </div>
                             )) : (
                                 <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-3 opacity-50">
                                     <Package className="w-10 h-10" />
                                     <p className="text-sm">Nenhum pedido na fila.</p>
                                 </div>
                             )}
-                            {queue && queue.length > 4 && (
+                            {combinedQueue.length > 4 && (
                                 <div className="text-center pt-2">
                                     <Link href={route('hub.queue')} className="text-xs font-bold text-flame-400 hover:text-flame-300">
-                                        Ver todos ({queue.length})
+                                        Ver todos ({combinedQueue.length})
                                     </Link>
                                 </div>
                             )}
