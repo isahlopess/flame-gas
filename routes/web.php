@@ -31,10 +31,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::post('/api/orders', [OrderController::class, 'store'])->name('api.orders.store');
+Route::post('/api/orders', [OrderController::class, 'store'])->name('api.orders.store')->middleware('throttle:10,1');
 Route::post('/api/orders/{id}/rate', [OrderController::class, 'rate'])->name('api.orders.rate')->middleware('auth');
-Route::post('/api/orders/{id}/accept', [OrderController::class, 'accept'])->name('api.orders.accept')->middleware('auth');
-Route::post('/api/orders/{id}/complete', [OrderController::class, 'complete'])->name('api.orders.complete')->middleware('auth');
+Route::post('/api/orders/{id}/accept', [OrderController::class, 'accept'])->name('api.orders.accept')->middleware(['auth', RoleMiddleware::class . ':employee,manager']);
+Route::post('/api/orders/{id}/complete', [OrderController::class, 'complete'])->name('api.orders.complete')->middleware(['auth', RoleMiddleware::class . ':employee,manager']);
 
 Route::middleware(['auth', RoleMiddleware::class . ':employee,manager'])->prefix('hub')->group(function () {
     Route::get('/', function () {

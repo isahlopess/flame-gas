@@ -29,6 +29,9 @@ class Order extends Model
 
     protected $casts = [
         'total' => 'decimal:2',
+        'phone' => 'encrypted',
+        'address' => 'encrypted',
+        'complement' => 'encrypted',
     ];
 
     public function user(): BelongsTo
