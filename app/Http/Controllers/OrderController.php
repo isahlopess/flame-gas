@@ -34,12 +34,12 @@ class OrderController extends Controller
                 'status' => 'pending',
                 'total' => $validated['total'],
                 'payment_method' => $validated['payment_method'],
-                'notes' => $validated['notes'],
+                'notes' => $validated['notes'] ?? null,
                 'phone' => $validated['phone'],
                 'address' => $validated['address'],
                 'neighborhood' => $validated['neighborhood'],
                 'city' => $validated['city'],
-                'complement' => $validated['complement'],
+                'complement' => $validated['complement'] ?? null,
             ]);
 
             foreach ($validated['items'] as $item) {

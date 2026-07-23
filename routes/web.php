@@ -21,6 +21,9 @@ Route::get('/', function () {
 });
 
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\HealthController;
+
+Route::get('/api/health', [HealthController::class, 'index'])->name('api.health');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
