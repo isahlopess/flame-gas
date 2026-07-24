@@ -31,6 +31,10 @@ $_SERVER['APP_EVENTS_CACHE']  = '/tmp/cache/events.php';
 $_SERVER['APP_SERVICES_CACHE'] = '/tmp/cache/services.php';
 $_SERVER['APP_PACKAGES_CACHE'] = '/tmp/cache/packages.php';
 
+if ($neonEndpoint = ($_SERVER['NEON_ENDPOINT'] ?? getenv('NEON_ENDPOINT'))) {
+    putenv("PGOPTIONS=endpoint={$neonEndpoint}");
+}
+
 try {
     require __DIR__.'/../vendor/autoload.php';
 
