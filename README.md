@@ -1,59 +1,135 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
+  <img src="public/images/fire.png" alt="Flame Gas Logo" width="120" />
+  <h1>Flame Gas Delivery System</h1>
+  <p>A modern, high-performance web application for gas cylinder and water gallon delivery management.</p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+  <div>
+    <img src="https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel" />
+    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+    <img src="https://img.shields.io/badge/Inertia.js-9553E9?style=for-the-badge&logo=inertia&logoColor=white" alt="Inertia.js" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+    <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
+  </div>
+</div>
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Flame Gas** is a comprehensive full-stack solution designed to streamline the operations of gas and water delivery businesses. Built with a robust **Laravel** backend and a reactive **React** frontend connected via **Inertia.js**, this application eliminates the need for a separate API layer, providing a seamless SPA (Single Page Application) experience while retaining the power of server-side routing and controllers.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Key Features
 
-## Learning Laravel
+- **Role-Based Access Control (RBAC):** Distinct interfaces and permissions for Customers, Drivers, and Administrators using Spatie's permission package.
+- **Dynamic Order Tracking:** Real-time status updates from request to delivery.
+- **Modern User Interface:** Highly responsive and aesthetic UI built with Tailwind CSS, featuring glassmorphism elements and micro-animations.
+- **Serverless Ready:** Configured for frictionless deployment on Vercel utilizing Node.js wrappers for PHP runtimes (`vercel-php`).
+- **Secure Authentication:** Built-in Laravel Sanctum authentication combined with Inertia's secure state management.
+- **Asset Optimization:** Integrated Vite for blazing-fast Hot Module Replacement (HMR) in development and optimized asset bundling in production.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Technology Stack
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Backend
+- **Framework:** Laravel 11.x (PHP 8.2+)
+- **Database:** PostgreSQL (Cloud-hosted via Neon.tech)
+- **ORM:** Eloquent ORM with robust query scopes and relationships
+- **Security:** Laravel Sanctum, CSRF Protection, Password Hashing
 
-## Laravel Sponsors
+### Frontend
+- **Library:** React 18
+- **Bridge:** Inertia.js (Classic Monolith architecture)
+- **Styling:** Tailwind CSS + PostCSS
+- **Icons:** Lucide React & FontAwesome
+- **Build Tool:** Vite
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### DevOps & Infrastructure
+- **Hosting:** Vercel (Serverless Functions)
+- **PHP Builder:** `vercel-php@0.9.0`
+- **Static Assets:** `@vercel/static`
 
-### Premium Partners
+## Local Development
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Prerequisites
+- PHP >= 8.2
+- Composer
+- Node.js & NPM
+- PostgreSQL or MySQL
 
-## Contributing
+### Installation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/isahlopess/flame-gas.git
+   cd flame-gas
+   ```
 
-## Code of Conduct
+2. **Install PHP Dependencies**
+   ```bash
+   composer install
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+3. **Install Node Dependencies**
+   ```bash
+   npm install
+   ```
 
-## Security Vulnerabilities
+4. **Environment Configuration**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+   *Update your `.env` file with your local database credentials.*
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. **Run Migrations & Seeders**
+   ```bash
+   php artisan migrate --seed
+   ```
+   *Note: The seeder populates default products (Residential Gas, Commercial Gas, Water Gallons) and test users.*
+
+6. **Start the Development Servers**
+   Open two terminal tabs:
+   ```bash
+   # Terminal 1: Vite HMR server
+   npm run dev
+   
+   # Terminal 2: Laravel backend server
+   php artisan serve
+   ```
+
+## Deployment on Vercel
+
+This project includes a highly optimized `vercel.json` configuration tailored for deploying Laravel on Vercel's serverless environment, bypassing traditional VPS setups.
+
+### Key Deployment Configurations:
+- **Serverless PHP:** Uses `vercel-php@0.9.0` to compile PHP into AWS Lambda functions.
+- **Static Routing:** Explicit routing rules ensure that Vite's compiled assets (`/public/build`) and static images (`/public/images`) are served directly via Vercel's CDN, avoiding unnecessary PHP invocations.
+- **Serverless Database Connection:** Configured to handle PostgreSQL SNI requirements via `PGOPTIONS` environment variable for cloud databases like Neon.
+
+### Vercel Environment Variables Required:
+```ini
+DB_CONNECTION=pgsql
+DB_HOST=your-neon-hostname.aws.neon.tech
+DB_PORT=5432
+DB_DATABASE=neondb
+DB_USERNAME=your_db_user
+DB_PASSWORD=your_db_password
+NEON_ENDPOINT=your-neon-endpoint-id  # Crucial for SNI routing
+APP_KEY=your_laravel_app_key
+SESSION_DRIVER=database
+CACHE_STORE=database
+```
+
+## Demo / Test Accounts
+
+You can access the live application using the following credentials:
+
+| Role | Email | Password |
+|------|-------|----------|
+| **Admin** | `admin@flamegas.com` | `FlameMaster26!` |
+| **Driver** | `entregador@flamegas.com` | `DriverPro26!` |
+| **Client** | `cliente@flamegas.com` | `Cliente26!` |
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
