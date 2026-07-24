@@ -25,6 +25,13 @@
         "APP_DEBUG": "true",
         "LOG_CHANNEL": "stderr",
         "LOG_FORMATTER": "Monolog\\Formatter\\JsonFormatter",
-        "CACHE_STORE": "array"
+        "CACHE_STORE": "array",
+        "DB_CONNECTION": "pgsql",
+        "DB_HOST": "ep-plain-fog-aivq6cfj-pooler.c-4.us-east-1.aws.neon.tech",
+        "DB_PORT": "5432",
+        "DB_DATABASE": "neondb",
+        "DB_USERNAME": "neondb_owner",
+        "DB_PASSWORD": "npg_iy0nVH9KREfY",
+        "NEON_ENDPOINT": "ep-plain-fog-aivq6cfj"
     }
 }
