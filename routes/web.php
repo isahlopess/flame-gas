@@ -4,7 +4,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Artisan;
 use Inertia\Inertia;
 use App\Models\Product;
 use App\Models\Order;
@@ -21,14 +20,6 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/install-db', function () {
-    try {
-        Artisan::call('migrate:fresh', ['--force' => true, '--seed' => true]);
-        return "Banco de dados e tabelas criados com sucesso na nuvem! <br> " . Artisan::output();
-    } catch (\Exception $e) {
-        return "Erro ao criar tabelas: " . $e->getMessage();
-    }
-});
 
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\HealthController;

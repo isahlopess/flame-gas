@@ -22,10 +22,10 @@
     ],
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "true",
+        "APP_DEBUG": "false",
         "LOG_CHANNEL": "stderr",
         "LOG_FORMATTER": "Monolog\\Formatter\\JsonFormatter",
-        "CACHE_STORE": "array",
+        "CACHE_STORE": "database",
         "DB_CONNECTION": "pgsql",
         "DB_HOST": "ep-plain-fog-aivq6cfj-pooler.c-4.us-east-1.aws.neon.tech",
         "DB_PORT": "5432",
